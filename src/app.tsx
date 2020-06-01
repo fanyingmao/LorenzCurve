@@ -30,27 +30,51 @@ class App extends Component {
   // eslint-disable-next-line react/sort-comp
   config: Config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/funtion/funtion'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
+      navigationBarTitleText: '洛伦兹曲线模拟',
       navigationBarTextStyle: 'black'
+    },
+    tabBar: {
+      list: [
+        {
+          pagePath: 'pages/index/index',
+          text: '系数',
+          // iconPath: './images/tab/home.png',
+          // selectedIconPath: './images/tab/home-active.png',
+        },
+        {
+          pagePath: 'pages/funtion/funtion',
+          text: '拟合',
+          // iconPath: './images/tab/cart.png',
+          // selectedIconPath: './images/tab/cart-active.png',
+        }
+      ],
+      color: '#333',
+      selectedColor: '#333',
+      backgroundColor: '#fff',
+      borderStyle: 'white',
     }
+
   }
 
-  componentDidMount () {}
+  componentDidMount() { }
 
-  componentDidShow () {}
+  componentDidShow() { }
 
-  componentDidHide () {}
+  componentDidHide() { }
 
-  componentDidCatchError () {}
+  componentDidCatchError() { }
 
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数
-  render () {
+  render() {
+    // const { current } = this.state
+
     return (
       <Provider store={store}>
         <Index />
