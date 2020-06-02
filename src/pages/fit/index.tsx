@@ -4,7 +4,7 @@ import { View, Button, Text, Canvas } from '@tarojs/components'
 import { AtSlider } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
-import './function.scss'
+import './index.scss'
 
 type PageStateProps = {
   counterStore: {

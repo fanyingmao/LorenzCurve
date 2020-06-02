@@ -46,7 +46,7 @@ class Index extends Component {
   componentWillMount() { }
 
   componentWillReact() {
-    this.getDialClock();
+    getDialClock();
   }
 
   componentDidMount() {
@@ -162,7 +162,7 @@ class Index extends Component {
   }
 
   render() {
-    const { changeValueStore: { gini } } = this.props;
+    const { changeValueStore: { gini, setGini } } = this.props;
     return (
       <View className='panel__content'>
         {/* <Button onClick={this.increment}>+</Button>

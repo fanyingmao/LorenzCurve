@@ -31,10 +31,12 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/index/index',
-      'pages/funtion/funtion'
+      'pages/fit/index',
+      'pages/function/index',
+      'pages/help/index'
     ],
     window: {
-      backgroundTextStyle: 'light',
+      backgroundTextStyle: 'dark',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: '洛伦兹曲线模拟',
       navigationBarTextStyle: 'black'
@@ -44,18 +46,30 @@ class App extends Component {
         {
           pagePath: 'pages/index/index',
           text: '系数',
-          // iconPath: './images/tab/home.png',
-          // selectedIconPath: './images/tab/home-active.png',
+          iconPath: './images/tab/gini.png',
+          selectedIconPath: './images/tab/gini-active.png',
+        },      
+        {
+          pagePath: 'pages/fit/index',
+          text: '拟合',
+          iconPath: './images/tab/fit.png',
+          selectedIconPath: './images/tab/fit-active.png',
         },
         {
-          pagePath: 'pages/funtion/funtion',
-          text: '拟合',
-          // iconPath: './images/tab/cart.png',
-          // selectedIconPath: './images/tab/cart-active.png',
+          pagePath: 'pages/function/index',
+          text: '函数',
+          iconPath: './images/tab/fun.png',
+          selectedIconPath: './images/tab/fun-active.png',
+        },
+        {
+          pagePath: 'pages/help/index',
+          text: '帮助',
+          iconPath: './images/tab/help.png',
+          selectedIconPath: './images/tab/help-active.png',
         }
       ],
       color: '#333',
-      selectedColor: '#333',
+      selectedColor: '#006ea6',
       backgroundColor: '#fff',
       borderStyle: 'white',
     }
