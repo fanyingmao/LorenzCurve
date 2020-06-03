@@ -40,7 +40,7 @@ class Index extends Component {
    */
   // eslint-disable-next-line react/sort-comp
   config: Config = {
-    navigationBarTitleText: '首页'
+    navigationBarTitleText: '模型'
   }
 
   componentWillMount() { }

@@ -57,7 +57,7 @@ class App extends Component {
         },
         {
           pagePath: 'pages/function/index',
-          text: '函数',
+          text: '模型',
           iconPath: './images/tab/fun.png',
           selectedIconPath: './images/tab/fun-active.png',
         },

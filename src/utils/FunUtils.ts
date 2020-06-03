@@ -10,18 +10,18 @@ export class FunUtils {
         let x = 0;
         let y: number;
         let sumy = 0;
-        let yArr: number[] = [];
+        let pointArr: IPoint[] = [];
         do {
             x += this.step;
             x = Math.round(x / this.step) * this.step;
             y = func(x, a);
-            yArr.push(y);
+            pointArr.push({type:0,x,y});
             sumy += y * this.step;
             // console.log('x' + x + 'y' + y);
         }
         while (x < 1);
         // console.log('res = ' + sumy);
-        return { sumy, yArr };
+        return { sumy, pointArr };
     }
 
     //获得点的斜率
@@ -35,10 +35,10 @@ export class FunUtils {
             throw new Error(`最大最小值超出: ${miniValue}  ${maxValue} integralValue:${integralValue}`);
         }
         let midA = (maxA + minA) / 2;
-        let { sumy, yArr } = this.getIntegral0_1(func, midA);
-        console.log(`${minA} ${midA} ${maxA}`);
+        let { sumy, pointArr } = this.getIntegral0_1(func, midA);
+        // console.log(`${minA} ${midA} ${maxA}`);
         if (Math.abs(sumy - integralValue) < this.BinaryAccuracy) {
-            return { resA: midA, yArr }
+            return { resA: midA, pointArr }
         }
         else {
             if (sumy > integralValue) {
@@ -55,7 +55,7 @@ export class FunUtils {
         let maxValue = this.getIntegral0_1(func, maxA).sumy;
         let miniValue = this.getIntegral0_1(func, minA).sumy;
         let integralValue = (1 - gini) / 2;
-        console.log(`maxValue ${maxValue}  miniValue ${miniValue}`);
+        // console.log(`maxValue ${maxValue}  miniValue ${miniValue}`);
         if (maxValue < miniValue) {
             return this.binarySearchA(func, integralValue, maxA, maxValue, minA, miniValue);
         }
@@ -108,7 +108,7 @@ export class FunUtils {
     public static searchPointFitStart(func: Function, pointArr: IPoint[], minA: number, maxA: number) {
         let maxValue = this.getPointVariance(func, maxA, pointArr);
         let miniValue = this.getPointVariance(func, minA, pointArr);
-        console.log(`maxValue ${maxValue}  miniValue ${miniValue}`);
+        // console.log(`maxValue ${maxValue}  miniValue ${miniValue}`);
         if (maxA < minA) {
             return this.searchPointFit(func, pointArr, maxA, maxValue, minA, miniValue);
         }
