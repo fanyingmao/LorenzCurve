@@ -1,11 +1,11 @@
-interface IConfigItem {
-    name: string,
-    func: Function,
-    maxA: number,
-    minA: number,
+interface ConfigItem {
+    name: string
+    func: Function
+    maxA: number
+    minA: number
     from: string
 }
-const configList: IConfigItem[] = [
+const configList: ConfigItem[] = [
     // 论文 https://pdfs.semanticscholar.org/b58f/fd3ba37cd5d4a81a8e7eb6026e0b3a4d24a5.pdf
     {
         name: 'f0',

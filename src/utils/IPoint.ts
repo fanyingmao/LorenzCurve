@@ -3,8 +3,8 @@ export enum EPointType {//0:是点 1:是斜率
     Slope = 1,
 }
 
-export interface IPoint {
-    type?: EPointType,
-    x: number,
+export interface Point {
+    type?: EPointType
+    x: number
     y: number
 }

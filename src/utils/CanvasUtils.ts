@@ -1,15 +1,15 @@
-import { CanvasContext, connectSocket } from "@tarojs/taro";
-import { IPoint } from "./IPoint";
-import { FunUtils } from "./FunUtils";
+import { CanvasContext, } from "@tarojs/taro";
+import { Point } from "./IPoint";
+import FunUtils  from "./FunUtils";
 import FunLC from './FunLC';
 
-export class CanvasUtils {
+export default class CanvasUtils {
     private ctx: CanvasContext;
     private width: number;
     private length: number;
     private gini: number;
     private funLCIndex: number;
-    private pointArr: IPoint[];
+    private pointArr: Point[];
     private resA: number;
 
     constructor(ctx: CanvasContext, width: number) {
@@ -75,7 +75,7 @@ export class CanvasUtils {
     public drawFunLine(funLCIndex: number, gini: number) {
         const length = this.length;
         if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
-            let { resA,pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
+            const { resA,pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
             this.pointArr = pointArr;
             this.resA = resA;
         }

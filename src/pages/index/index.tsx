@@ -1,13 +1,11 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text, Canvas } from '@tarojs/components'
+import { View, Canvas } from '@tarojs/components'
 import { AtSlider } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
-import { CanvasUtils } from '../../utils/CanvasUtils'
-import { FunUtils } from '../../utils/FunUtils'
-import FunLC from '../../utils/FunLC'
+import CanvasUtils from '../../utils/CanvasUtils'
 
 type PageStateProps = {
   counterStore: {
@@ -15,7 +13,7 @@ type PageStateProps = {
     increment: Function
     decrement: Function
     incrementAsync: Function
-  },
+  }
   changeValueStore: {
     angle: number
     xShowValue: number
@@ -116,11 +114,11 @@ class Index extends Component {
         {/* 表盘绘制 */}
         <Canvas canvasId='myCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
         <View className='example-item'>
-          <View className='example-item__desc'>基尼系数:{gini}</View>
-          <AtSlider value={gini * 100} step={1} max={100} min={0} onChanging={(value: number) => { this.setGini(value / 100) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
+          <AtSlider value={gini * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setGini(value / 1000) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
 
-          <View className='example-item__desc'>x轴数值:{xShowValue}</View>
-          <AtSlider value={xShowValue * 100} step={1} max={100} min={0} onChanging={(value: number) => { this.setXShowValue(value / 100);this.dorwLC();}} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
+          <AtSlider value={xShowValue * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setXShowValue(value / 1000);this.dorwLC();}} onChange={() => { this.dorwLC(); }} ></AtSlider>
         </View>
       </View>
     )
