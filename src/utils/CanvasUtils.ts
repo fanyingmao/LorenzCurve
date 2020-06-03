@@ -4,13 +4,21 @@ import { FunUtils } from "./FunUtils";
 import FunLC from './FunLC';
 
 export class CanvasUtils {
-    public ctx: CanvasContext;
-    public width: number;
-    public length: number;
+    private ctx: CanvasContext;
+    private width: number;
+    private length: number;
+    private gini: number;
+    private funLCIndex: number;
+    private pointArr: IPoint[];
+    private resA: number;
+
     constructor(ctx: CanvasContext, width: number) {
         this.ctx = ctx;
         this.width = width;
         this.length = this.width * 4 / 5;
+        this.gini = 0;
+        this.funLCIndex = 0;
+        this.pointArr = [];
     }
 
     // 绘制坐标背景
@@ -46,7 +54,7 @@ export class CanvasUtils {
         this.ctx.moveTo(length, -length);
         this.ctx.lineTo(0, -length);
         this.ctx.stroke();
-        this.ctx.setLineDash([],0);
+        this.ctx.setLineDash([], 0);
         // 原点
         this.ctx.beginPath();
         this.ctx.arc(0, 0, 2, 0, 2 * Math.PI, true);
@@ -64,18 +72,36 @@ export class CanvasUtils {
     }
 
     // 绘制函数模型曲线
-    public drawFunLine(pointArr: IPoint[]) {
+    public drawFunLine(funLCIndex: number, gini: number) {
         const length = this.length;
-
-        // let res = FunUtils.binarySearchAStart(FunLC[0].func, 0.6, FunLC[0].minA, FunLC[0].maxA);
-        // pointArr = res.pointArr;
+        if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
+            let { resA,pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
+            this.pointArr = pointArr;
+            this.resA = resA;
+        }
+        this.funLCIndex = funLCIndex;
+        this.gini = gini;
         // console.log(pointArr);
         this.ctx.beginPath();
         this.ctx.moveTo(0, 0);
         this.ctx.strokeStyle = '#ff0000';
-        for (let i = 0; i < pointArr.length; i++) {
-            this.ctx.lineTo(pointArr[i].x * length, -pointArr[i].y * length);
+        for (let i = 0; i < this.pointArr.length; i++) {
+            this.ctx.lineTo(this.pointArr[i].x * length, -this.pointArr[i].y * length);
         }
         this.ctx.stroke();
+    }
+
+    // 绘制x
+    public drapXShow(x: number) {
+        const length = this.length;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x*this.length, 0);
+        this.ctx.lineTo(x*this.length, -length);
+        this.ctx.strokeStyle = '#666666';
+        this.ctx.stroke();
+    }
+
+    public draw() {
+        this.ctx.draw();
     }
 }
