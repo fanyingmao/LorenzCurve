@@ -1,6 +1,6 @@
 import { CanvasContext, } from "@tarojs/taro";
 import { Point } from "./IPoint";
-import FunUtils  from "./FunUtils";
+import FunUtils from "./FunUtils";
 import FunLC from './FunLC';
 
 export default class CanvasUtils {
@@ -75,7 +75,7 @@ export default class CanvasUtils {
     public drawFunLine(funLCIndex: number, gini: number) {
         const length = this.length;
         if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
-            const { resA,pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
+            const { resA, pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
             this.pointArr = pointArr;
             this.resA = resA;
         }
@@ -95,9 +95,18 @@ export default class CanvasUtils {
     public drapXShow(x: number) {
         const length = this.length;
         this.ctx.beginPath();
-        this.ctx.moveTo(x*this.length, 0);
-        this.ctx.lineTo(x*this.length, -length);
+        this.ctx.moveTo(x * this.length, 0);
+        this.ctx.lineTo(x * this.length, -length);
         this.ctx.strokeStyle = '#666666';
+        this.ctx.stroke();
+        const y = FunLC[this.funLCIndex].func(x, this.resA)
+        const k = FunUtils.getDerivative(FunLC[this.funLCIndex].func, this.resA, x);
+        const klen =k<1 ? x * this.length/2 : y * this.length/2;
+        console.log(' k=' + k);
+        this.ctx.beginPath();
+        this.ctx.moveTo(x * this.length - klen, -y * this.length + klen * k);
+        this.ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
+        this.ctx.strokeStyle = '#00974e';
         this.ctx.stroke();
     }
 

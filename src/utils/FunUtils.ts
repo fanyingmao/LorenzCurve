@@ -15,7 +15,7 @@ export default class FunUtils {
             x += this.step;
             x = Math.round(x / this.step) * this.step;
             y = func(x, a);
-            pointArr.push({type:0,x,y});
+            pointArr.push({ type: 0, x, y });
             sumy += y * this.step;
             // console.log('x' + x + 'y' + y);
         }
@@ -26,7 +26,12 @@ export default class FunUtils {
 
     //获得点的斜率
     public static getDerivative(func: Function, a: number, x: number): number {
-        return (func(x + this.DerivativeAccuracy / 10, a) - func(x, a)) / this.DerivativeAccuracy;
+        if (x < 1) {
+            return (func(x + this.DerivativeAccuracy, a) - func(x, a)) / this.DerivativeAccuracy;
+        }
+        else {
+            return (func(x, a) - func(x - this.DerivativeAccuracy, a)) / this.DerivativeAccuracy;
+        }
     }
 
     //获取基尼系数对应a值

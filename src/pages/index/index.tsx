@@ -15,11 +15,13 @@ type PageStateProps = {
     incrementAsync: Function
   }
   changeValueStore: {
-    angle: number
+    funIndex: number
     xShowValue: number
+    yShowValue: number
+    kShowValue: number
     gini: number
     setAngle: Function
-    setXShowValue: Function
+    setShowValue: Function
     setGini: Function
   }
 }
@@ -83,16 +85,16 @@ class Index extends Component {
 
   setXShowValue = (value: number) => {
     const { changeValueStore } = this.props
-    changeValueStore.setXShowValue(value)
+      changeValueStore.setShowValue(value)
   }
 
   // 绘制表盘
   dorwLC = () => {
-    const { changeValueStore: { gini, xShowValue } } = this.props
- 
+    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+
     this.mCanvasUtils.drawCoordinate();
     try {
-      this.mCanvasUtils.drawFunLine(0, gini);
+      this.mCanvasUtils.drawFunLine(funIndex, gini);
     } catch (error) {
       console.log('绘制模型函数错误:' + error.message);
     }
@@ -118,7 +120,7 @@ class Index extends Component {
           <AtSlider value={gini * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setGini(value / 1000) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
 
           <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-          <AtSlider value={xShowValue * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setXShowValue(value / 1000);this.dorwLC();}} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <AtSlider value={xShowValue * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setXShowValue(value / 1000); this.dorwLC(); }} onChange={() => { this.dorwLC(); }} ></AtSlider>
         </View>
       </View>
     )
