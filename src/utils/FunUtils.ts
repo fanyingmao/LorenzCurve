@@ -3,7 +3,7 @@ import { Point } from "./IPoint";
 export default class FunUtils {
     public static readonly step = 0.001;//微积分的细化度
     public static readonly BinaryAccuracy = 0.001;//二分查找精度
-    public static readonly DerivativeAccuracy = 0.0001;//斜率计算精度
+    public static readonly DerivativeAccuracy = 0.000001;//斜率计算精度
 
     //0到1的定积分，和点
     public static getIntegral01(func: Function, a: number) {
@@ -26,12 +26,12 @@ export default class FunUtils {
 
     //获得点的斜率
     public static getDerivative(func: Function, a: number, x: number): number {
-        if (x < 1) {
-            return (func(x + this.DerivativeAccuracy, a) - func(x, a)) / this.DerivativeAccuracy;
-        }
-        else {
-            return (func(x, a) - func(x - this.DerivativeAccuracy, a)) / this.DerivativeAccuracy;
-        }
+        // if (x < 1) {
+        return (func(x + this.DerivativeAccuracy, a) - func(x, a)) / this.DerivativeAccuracy;
+        // }
+        // else {
+        //     return (func(x, a) - func(x - this.DerivativeAccuracy, a)) / this.DerivativeAccuracy;
+        // }
     }
 
     //获取基尼系数对应a值

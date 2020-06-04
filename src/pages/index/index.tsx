@@ -45,13 +45,14 @@ class Index extends Component {
   config: Config = {
     navigationBarTitleText: '系数'
   }
-  private readonly sliderMax = 100;
-  mCanvasUtils: CanvasUtils;
+  private readonly sliderMax = 1000;
+  indexCanvasGg: CanvasUtils;
+  indexCanvasX: CanvasUtils;
   componentWillMount() {
-    const ctx = Taro.createCanvasContext('indexCanvas', this.$scope);
     const res = Taro.getSystemInfoSync()
     const width = res.windowWidth;
-    this.mCanvasUtils = new CanvasUtils(ctx, width);
+    this.indexCanvasGg = new CanvasUtils(width);
+    this.indexCanvasX = new CanvasUtils(width);
     this.dorwLC();
   }
 
@@ -86,25 +87,34 @@ class Index extends Component {
 
   setXShowValue = (value: number) => {
     const { changeValueStore } = this.props
-      changeValueStore.setShowValue(value)
+    changeValueStore.setShowValue(value)
   }
 
-  // 绘制表盘
+  // 绘制背景
   dorwLC = () => {
     const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
-
-    this.mCanvasUtils.drawCoordinate();
+    const ctx = Taro.createCanvasContext('indexCanvasGg', this.$scope);
+    this.indexCanvasGg.initDraw(ctx);
+    this.indexCanvasGg.drawCoordinate(ctx);
     try {
-      this.mCanvasUtils.drawFunLine(funIndex, gini);
+      this.indexCanvasGg.drawFunLine(ctx, funIndex, gini);
     } catch (error) {
       console.log('绘制模型函数错误:' + error.message);
     }
-    this.mCanvasUtils.drapXShow(xShowValue);
     // 开始绘制
-    this.mCanvasUtils.draw();
+    ctx.draw();
+    this.dorwX();
   }
 
-
+  // 绘制X
+  dorwX = () => {
+    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+    const ctx = Taro.createCanvasContext('indexCanvasX', this.$scope);
+    this.indexCanvasGg.initDraw(ctx);
+    this.indexCanvasGg.drapXShow(ctx, xShowValue);
+    // 开始绘制
+    ctx.draw();
+  }
 
   render() {
     const { changeValueStore: { gini, xShowValue } } = this.props
@@ -115,13 +125,17 @@ class Index extends Component {
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text> */}
         {/* 表盘绘制 */}
-        <Canvas canvasId='indexCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
+        <View className='example-item'>
+          <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
+          <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
+        </View>
+
         <View className='example-item'>
           <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
           <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
 
           <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-          <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwLC(); }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
         </View>
       </View>
     )

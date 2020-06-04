@@ -2,9 +2,9 @@ import { CanvasContext, } from "@tarojs/taro";
 import { Point } from "./IPoint";
 import FunUtils from "./FunUtils";
 import FunLC from './FunLC';
-
+//todo: 这里做系数与拟合页面的绘图最好是分开用继承来解耦
 export default class CanvasUtils {
-    private ctx: CanvasContext;
+    // private ctx: CanvasContext;
     private width: number;
     private length: number;
     private gini: number;
@@ -17,8 +17,7 @@ export default class CanvasUtils {
     private readonly offset = 10;
     private fitPointArr: Point[];
     private yMax: number;//y轴最大值
-    constructor(ctx: CanvasContext, width: number) {
-        this.ctx = ctx;
+    constructor(width: number) {
         this.width = width;
         this.length = this.width * this.widthRate;
         this.gini = 0;
@@ -26,60 +25,61 @@ export default class CanvasUtils {
         this.pointArr = [];
         this.fitPointArr = [];
     }
+    public initDraw(ctx: CanvasContext) {
+        //设置坐标轴原点
+        const painRate = (1 - this.widthRate) / 2;
+        ctx.translate(this.width * painRate + this.offset, this.width * (1 - painRate) + this.offset);
+        ctx.save();
+    }
 
     // 绘制坐标背景
-    public drawCoordinate() {
+    public drawCoordinate(ctx: CanvasContext) {
         const length = this.length;
-        //设置坐标轴原点
-        let painRate = (1 - this.widthRate) / 2;
-        this.ctx.translate(this.width * painRate + this.offset, this.width * (1 - painRate) + this.offset);
-        this.ctx.save();
+        ctx.beginPath();
+        ctx.setLineWidth(1);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -length);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(length, 0);
 
-        this.ctx.beginPath();
-        this.ctx.setLineWidth(1);
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(0, -length);
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(length, 0);
+        ctx.moveTo(length, -length);
+        ctx.lineTo(length, 0);
 
-        this.ctx.moveTo(length, -length);
-        this.ctx.lineTo(length, 0);
+        ctx.stroke();
+        ctx.closePath();
 
-        this.ctx.stroke();
-        this.ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = '#0000ff';
+        ctx.moveTo(0, 0);
+        ctx.lineTo(length, -length);
+        ctx.stroke();
+        ctx.closePath();
 
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#0000ff';
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(length, -length);
-        this.ctx.stroke();
-        this.ctx.closePath();
-
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#000';
-        this.ctx.setLineDash([4, 4], 2);
-        this.ctx.moveTo(length, -length);
-        this.ctx.lineTo(0, -length);
-        this.ctx.stroke();
-        this.ctx.setLineDash([], 0);
+        ctx.beginPath();
+        ctx.strokeStyle = '#000';
+        ctx.setLineDash([4, 4], 2);
+        ctx.moveTo(length, -length);
+        ctx.lineTo(0, -length);
+        ctx.stroke();
+        ctx.setLineDash([], 0);
         // 原点
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, 2, 0, 2 * Math.PI, true);
-        this.ctx.fill();
-        this.ctx.closePath();
+        ctx.beginPath();
+        ctx.arc(0, 0, 2, 0, 2 * Math.PI, true);
+        ctx.fill();
+        ctx.closePath();
 
         //绘制原点标题
-        this.ctx.font = "15px 微软雅黑"
-        this.ctx.scale
-        this.ctx.fillText("(0,0)", -16, 16);
-        this.ctx.fillText("1", length - 3, 16);
-        this.ctx.fillText("1", - 10, -length + 6);
-        this.ctx.fillText("(1,1)", length - 16, -length - 8);
+        ctx.font = "15px 微软雅黑"
+        ctx.scale
+        ctx.fillText("(0,0)", -16, 16);
+        ctx.fillText("1", length - 3, 16);
+        ctx.fillText("1", - 10, -length + 6);
+        ctx.fillText("(1,1)", length - 16, -length - 8);
 
     }
 
     // 绘制函数模型曲线
-    public drawFunLine(funLCIndex: number, gini: number) {
+    public drawFunLine(ctx: CanvasContext, funLCIndex: number, gini: number) {
         const length = this.length;
         if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
             const { resA, pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
@@ -89,72 +89,70 @@ export default class CanvasUtils {
         this.funLCIndex = funLCIndex;
         this.gini = gini;
         // console.log(pointArr);
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, 0);
-        this.ctx.strokeStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.strokeStyle = '#ff0000';
         for (let i = 0; i < this.pointArr.length; i++) {
-            this.ctx.lineTo(this.pointArr[i].x * length, -this.pointArr[i].y * length);
+            ctx.lineTo(this.pointArr[i].x * length, -this.pointArr[i].y * length);
         }
-        this.ctx.stroke();
+        ctx.stroke();
     }
 
     // 绘制x
-    public drapXShow(x: number) {
+    public drapXShow(ctx: CanvasContext, x: number) {
         const length = this.length;
-        this.ctx.beginPath();
-        this.ctx.setLineDash([4, 4], 2);
+        ctx.beginPath();
+        ctx.setLineDash([4, 4], 2);
         const y = FunLC[this.funLCIndex].func(x, this.resA)
         const k = FunUtils.getDerivative(FunLC[this.funLCIndex].func, this.resA, x);
-        this.ctx.moveTo(x * length, 0);
-        this.ctx.lineTo(x * length, -y * length);
+        ctx.moveTo(x * length, 0);
+        ctx.lineTo(x * length, -y * length);
 
-        this.ctx.strokeStyle = '#666666';
+        ctx.strokeStyle = '#666666';
 
 
-        this.ctx.moveTo(0, -y * length);
-        this.ctx.lineTo(x * length, -y * length);
-        this.ctx.stroke();
-        this.ctx.setLineDash([0, 0], 0);
+        ctx.moveTo(0, -y * length);
+        ctx.lineTo(x * length, -y * length);
+        ctx.stroke();
+        ctx.setLineDash([0, 0], 0);
         if (x > 0.3 && x < 0.97) {
             this.lastX = x;
             this.lastY = y;
         }
-        // this.ctx.fillText(`(${x.toFixed(3)},${y.toFixed(3)})\nk=${k.toFixed(3)}`, x * this.length, -y * this.length);
-        this.ctx.fillText(`k=${k.toFixed(3)}`, this.lastX * length - 60, -this.lastY * length - 6);
-        this.ctx.fillText(x.toFixed(3), this.lastX * length - 20, 16);
-        this.ctx.fillText(y.toFixed(3), - 40, -this.lastY * length + 6);
+        // ctx.fillText(`(${x.toFixed(3)},${y.toFixed(3)})\nk=${k.toFixed(3)}`, x * this.length, -y * this.length);
+        ctx.font = "15px 微软雅黑"
+        ctx.fillText(`k=${k.toFixed(3)}`, this.lastX * length - 60, -this.lastY * length - 6);
+        ctx.fillText(x.toFixed(3), 0.9 * this.lastX * length - 20 - this.lastX, 16);
+        ctx.fillText(y.toFixed(3), - 40, -this.lastY * length + 6);
 
         // const klen =k<1 ? x * this.length/2 : y * this.length/2;
-        // this.ctx.beginPath();
-        // this.ctx.moveTo(x * this.length - klen, -y * this.length + klen * k);
-        // this.ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
-        // this.ctx.strokeStyle = '#00974e';
-        // this.ctx.stroke();
+        // ctx.beginPath();
+        // ctx.moveTo(x * this.length - klen, -y * this.length + klen * k);
+        // ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
+        // ctx.strokeStyle = '#00974e';
+        // ctx.stroke();
     }
 
-    public drawFitPoint() {
+    public drawFitPoint(ctx: CanvasContext) {
         const length = this.length;
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#ff0000';
+
+
+        ctx.fillStyle = '#ff0000';
 
         for (let i = 0; i < this.fitPointArr.length; i++) {
-            this.ctx.arc(this.fitPointArr[i].x * length, -this.fitPointArr[i].y * length, 20, 0, 2 * Math.PI, true);
-            console.log(this.fitPointArr[i]);
+            ctx.beginPath();
+            ctx.arc(Math.floor(this.fitPointArr[i].x * length), Math.floor(-this.fitPointArr[i].y * length), 2, 0, 2 * Math.PI, true);
+            ctx.fill();
+            ctx.closePath();
         }
 
-        this.ctx.closePath();
     }
 
     public addFitPoint(fitPoint: Point) {
         this.fitPointArr.push(fitPoint);
-        this.drawFitPoint();
     }
 
     public clearFitPoint() {
         this.fitPointArr = [];
-    }
-
-    public draw() {
-        this.ctx.draw();
     }
 }

@@ -61,10 +61,9 @@ class Index extends Component {
   }
 
   componentWillMount() {
-    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     const res = Taro.getSystemInfoSync()
     const width = res.windowWidth;
-    this.mCanvasUtils = new CanvasUtils(ctx, width);
+    this.mCanvasUtils = new CanvasUtils(width);
     this.dorwLC();
   }
 
@@ -105,15 +104,18 @@ class Index extends Component {
   // 绘制表盘
   dorwLC = () => {
     const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
-
-    this.mCanvasUtils.drawCoordinate();
-    // 开始绘制
-    this.mCanvasUtils.draw();
+    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
+    this.mCanvasUtils.initDraw(ctx);
+    this.mCanvasUtils.drawCoordinate(ctx);
+    // // 开始绘制
+    ctx.draw();
   }
 
   onAddPoint() {
-    const { fitX, fitY, fitStatus, fitType } = this.state;
-    this.mCanvasUtils.drawCoordinate();
+    const { fitX, fitY, fitType } = this.state;
+    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
+    this.mCanvasUtils.initDraw(ctx);
+    this.mCanvasUtils.drawCoordinate(ctx);
     switch (fitType) {
       case 0:
         this.mCanvasUtils.addFitPoint({ type: 0, x: fitX, y: fitY });
@@ -123,7 +125,8 @@ class Index extends Component {
       case 2:
         break;
     }
-    this.mCanvasUtils.draw();
+    this.mCanvasUtils.drawFitPoint(ctx);
+    ctx.draw();
   }
 
   render() {
