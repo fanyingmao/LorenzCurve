@@ -1,10 +1,11 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text, Canvas } from '@tarojs/components'
-import { AtSlider } from 'taro-ui'
+import { View, Canvas, Picker } from '@tarojs/components'
+import { AtSlider, AtList, AtListItem, AtButton } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
+import CanvasUtils from '../../utils/CanvasUtils'
 
 type PageStateProps = {
   counterStore: {
@@ -12,19 +13,28 @@ type PageStateProps = {
     increment: Function
     decrement: Function
     incrementAsync: Function
-  },
+  }
   changeValueStore: {
-    angle: number
-    proportion: number
+    funIndex: number
+    xShowValue: number
+    yShowValue: number
+    kShowValue: number
     gini: number
     setAngle: Function
-    setProportion: Function
+    setShowValue: Function
     setGini: Function
   }
 }
+type StateType = {
+  fitX: number
+  fitY: number
+  fitType: number
+  fitStatus: number
+}
 
 interface Index {
-  props: PageStateProps
+  props: PageStateProps,
+  state: StateType
 }
 
 @inject('changeValueStore')
@@ -40,16 +50,30 @@ class Index extends Component {
    */
   // eslint-disable-next-line react/sort-comp
   config: Config = {
-    navigationBarTitleText: '拟合'
+    navigationBarTitleText: '系数'
+  }
+  private readonly sliderMax = 100;
+  mCanvasUtils: CanvasUtils;
+
+  constructor(props) {
+    super(props);
+    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0 };
   }
 
-  componentWillMount() { }
+  componentWillMount() {
+    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
+    const res = Taro.getSystemInfoSync()
+    const width = res.windowWidth;
+    this.mCanvasUtils = new CanvasUtils(ctx, width);
+    this.dorwLC();
+  }
 
   componentWillReact() {
+
   }
 
   componentDidMount() {
-   
+
   }
 
   componentWillUnmount() { }
@@ -73,24 +97,82 @@ class Index extends Component {
     changeValueStore.setGini(value)
   }
 
+  setXShowValue = (value: number) => {
+    const { changeValueStore } = this.props
+    changeValueStore.setShowValue(value)
+  }
 
+  // 绘制表盘
+  dorwLC = () => {
+    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+
+    this.mCanvasUtils.drawCoordinate();
+    // 开始绘制
+    this.mCanvasUtils.draw();
+  }
+
+  onAddPoint() {
+    const { fitX, fitY, fitStatus, fitType } = this.state;
+    this.mCanvasUtils.drawCoordinate();
+    switch (fitType) {
+      case 0:
+        this.mCanvasUtils.addFitPoint({ type: 0, x: fitX, y: fitY });
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+    }
+    this.mCanvasUtils.draw();
+  }
 
   render() {
-    const { changeValueStore: { gini } } = this.props;
+    const { changeValueStore } = this.props
+    const { fitX, fitY, fitStatus, fitType } = this.state;
+    const selector = ['坐标点', '数据集合', '斜率'];
     return (
+
       <View className='panel__content'>
+        {/* <Button onClick={this.increment}>+</Button>
+        <Button onClick={this.decrement}>-</Button>
+        <Button onClick={this.incrementAsync}>Add Async</Button>
+        <Text>{counter}</Text> */}
+        {/* 表盘绘制 */}
+        <Canvas canvasId='fitCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
+
         <View className='example-item'>
-          <View className='example-item__desc'>圆心轨倾角</View>
-          <AtSlider value={50} step={1} max={90} min={0} showValue></AtSlider>
+          <Picker
+            mode='selector'
+            range={selector}
+            value={fitType}
+            onChange={(e) => { this.setState({ fitType: e.detail.value }) }}
+          >
+            <AtList>
+              <AtListItem
+                title='拟合方式'
+                extraText={selector[fitType]}
+              />
+            </AtList>
+          </Picker>
+          <View className='example-item'>
+            <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
+            <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+
+            <View className='example-item__desc'>y值:{fitY.toFixed(3)}</View>
+            <AtSlider value={fitY * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
+
+          </View>
+          <View className='btn-item'>
+            <View className='subitem'>
+              <AtButton type='primary' size='small' onClick={this.onAddPoint.bind(this)}>添加</AtButton>
+            </View>
+            <View className='subitem'>
+              <AtButton type='secondary' size='small'>重置</AtButton>
+            </View>
+          </View>
+
         </View>
-        <View className='example-item'>
-          <View className='example-item__desc'>圆最大半径比%</View>
-          <AtSlider value={50} step={1} max={100} min={0} showValue></AtSlider>
-        </View>
-        <View className='example-item'>
-          <View className='example-item__desc'>基尼系数%</View>
-          <AtSlider value={gini} step={1} max={100} min={0} onChanging={(value: number) => { this.setGini(value) }} ></AtSlider>
-        </View>
+
       </View>
     )
   }

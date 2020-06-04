@@ -15,6 +15,8 @@ export default class CanvasUtils {
     private lastY: number;
     private readonly widthRate = 8 / 10;
     private readonly offset = 10;
+    private fitPointArr: Point[];
+    private yMax: number;//y轴最大值
     constructor(ctx: CanvasContext, width: number) {
         this.ctx = ctx;
         this.width = width;
@@ -22,6 +24,7 @@ export default class CanvasUtils {
         this.gini = 0;
         this.funLCIndex = 0;
         this.pointArr = [];
+        this.fitPointArr = [];
     }
 
     // 绘制坐标背景
@@ -118,7 +121,7 @@ export default class CanvasUtils {
         }
         // this.ctx.fillText(`(${x.toFixed(3)},${y.toFixed(3)})\nk=${k.toFixed(3)}`, x * this.length, -y * this.length);
         this.ctx.fillText(`k=${k.toFixed(3)}`, this.lastX * length - 60, -this.lastY * length - 6);
-        this.ctx.fillText(x.toFixed(3), this.lastX * length - 40, 16);
+        this.ctx.fillText(x.toFixed(3), this.lastX * length - 20, 16);
         this.ctx.fillText(y.toFixed(3), - 40, -this.lastY * length + 6);
 
         // const klen =k<1 ? x * this.length/2 : y * this.length/2;
@@ -127,6 +130,28 @@ export default class CanvasUtils {
         // this.ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
         // this.ctx.strokeStyle = '#00974e';
         // this.ctx.stroke();
+    }
+
+    public drawFitPoint() {
+        const length = this.length;
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#ff0000';
+
+        for (let i = 0; i < this.fitPointArr.length; i++) {
+            this.ctx.arc(this.fitPointArr[i].x * length, -this.fitPointArr[i].y * length, 20, 0, 2 * Math.PI, true);
+            console.log(this.fitPointArr[i]);
+        }
+
+        this.ctx.closePath();
+    }
+
+    public addFitPoint(fitPoint: Point) {
+        this.fitPointArr.push(fitPoint);
+        this.drawFitPoint();
+    }
+
+    public clearFitPoint() {
+        this.fitPointArr = [];
     }
 
     public draw() {

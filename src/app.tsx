@@ -30,8 +30,8 @@ class App extends Component {
   // eslint-disable-next-line react/sort-comp
   config: Config = {
     pages: [
-      'pages/index/index',
       'pages/fit/index',
+      'pages/index/index',
       'pages/function/index',
       'pages/help/index'
     ],
@@ -57,7 +57,7 @@ class App extends Component {
         },
         {
           pagePath: 'pages/function/index',
-          text: '模型',
+          text: '函数',
           iconPath: './images/tab/fun.png',
           selectedIconPath: './images/tab/fun-active.png',
         },

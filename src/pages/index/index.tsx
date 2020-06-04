@@ -48,7 +48,7 @@ class Index extends Component {
   private readonly sliderMax = 100;
   mCanvasUtils: CanvasUtils;
   componentWillMount() {
-    const ctx = Taro.createCanvasContext('myCanvas', this.$scope);
+    const ctx = Taro.createCanvasContext('indexCanvas', this.$scope);
     const res = Taro.getSystemInfoSync()
     const width = res.windowWidth;
     this.mCanvasUtils = new CanvasUtils(ctx, width);
@@ -115,7 +115,7 @@ class Index extends Component {
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text> */}
         {/* 表盘绘制 */}
-        <Canvas canvasId='myCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
+        <Canvas canvasId='indexCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
         <View className='example-item'>
           <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
           <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
