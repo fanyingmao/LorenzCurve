@@ -45,6 +45,7 @@ class Index extends Component {
   config: Config = {
     navigationBarTitleText: '系数'
   }
+  private readonly sliderMax = 100;
   mCanvasUtils: CanvasUtils;
   componentWillMount() {
     const ctx = Taro.createCanvasContext('myCanvas', this.$scope);
@@ -117,10 +118,10 @@ class Index extends Component {
         <Canvas canvasId='myCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
         <View className='example-item'>
           <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
-          <AtSlider value={gini * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setGini(value / 1000) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
 
           <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-          <AtSlider value={xShowValue * 1000} step={1} max={1000} min={0} onChanging={(value: number) => { this.setXShowValue(value / 1000); this.dorwLC(); }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+          <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwLC(); }} onChange={() => { this.dorwLC(); }} ></AtSlider>
         </View>
       </View>
     )

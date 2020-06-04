@@ -1,5 +1,5 @@
 //单元测试
-import { FunUtils } from './FunUtils';
+import FunUtils  from './FunUtils';
 import FunLC from './FunLC';
 let startTime = Date.now();
 let res = FunUtils.binarySearchAStart(FunLC[0].func, 0.1, FunLC[0].minA, FunLC[0].maxA);

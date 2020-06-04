@@ -11,11 +11,14 @@ export default class CanvasUtils {
     private funLCIndex: number;
     private pointArr: Point[];
     private resA: number;
-
+    private lastX: number;
+    private lastY: number;
+    private readonly widthRate = 8 / 10;
+    private readonly offset = 10;
     constructor(ctx: CanvasContext, width: number) {
         this.ctx = ctx;
         this.width = width;
-        this.length = this.width * 4 / 5;
+        this.length = this.width * this.widthRate;
         this.gini = 0;
         this.funLCIndex = 0;
         this.pointArr = [];
@@ -25,7 +28,8 @@ export default class CanvasUtils {
     public drawCoordinate() {
         const length = this.length;
         //设置坐标轴原点
-        this.ctx.translate(this.width / 10, this.width * 9 / 10);
+        let painRate = (1 - this.widthRate) / 2;
+        this.ctx.translate(this.width * painRate + this.offset, this.width * (1 - painRate) + this.offset);
         this.ctx.save();
 
         this.ctx.beginPath();
@@ -95,19 +99,34 @@ export default class CanvasUtils {
     public drapXShow(x: number) {
         const length = this.length;
         this.ctx.beginPath();
-        this.ctx.moveTo(x * this.length, 0);
-        this.ctx.lineTo(x * this.length, -length);
-        this.ctx.strokeStyle = '#666666';
-        this.ctx.stroke();
+        this.ctx.setLineDash([4, 4], 2);
         const y = FunLC[this.funLCIndex].func(x, this.resA)
         const k = FunUtils.getDerivative(FunLC[this.funLCIndex].func, this.resA, x);
-        const klen =k<1 ? x * this.length/2 : y * this.length/2;
-        console.log(' k=' + k);
-        this.ctx.beginPath();
-        this.ctx.moveTo(x * this.length - klen, -y * this.length + klen * k);
-        this.ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
-        this.ctx.strokeStyle = '#00974e';
+        this.ctx.moveTo(x * length, 0);
+        this.ctx.lineTo(x * length, -y * length);
+
+        this.ctx.strokeStyle = '#666666';
+
+
+        this.ctx.moveTo(0, -y * length);
+        this.ctx.lineTo(x * length, -y * length);
         this.ctx.stroke();
+        this.ctx.setLineDash([0, 0], 0);
+        if (x > 0.3 && x < 0.97) {
+            this.lastX = x;
+            this.lastY = y;
+        }
+        // this.ctx.fillText(`(${x.toFixed(3)},${y.toFixed(3)})\nk=${k.toFixed(3)}`, x * this.length, -y * this.length);
+        this.ctx.fillText(`k=${k.toFixed(3)}`, this.lastX * length - 60, -this.lastY * length - 6);
+        this.ctx.fillText(x.toFixed(3), this.lastX * length - 40, 16);
+        this.ctx.fillText(y.toFixed(3), - 40, -this.lastY * length + 6);
+
+        // const klen =k<1 ? x * this.length/2 : y * this.length/2;
+        // this.ctx.beginPath();
+        // this.ctx.moveTo(x * this.length - klen, -y * this.length + klen * k);
+        // this.ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
+        // this.ctx.strokeStyle = '#00974e';
+        // this.ctx.stroke();
     }
 
     public draw() {
