@@ -1,11 +1,12 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Canvas } from '@tarojs/components'
-import { AtSlider } from 'taro-ui'
+import { View, Canvas, Picker } from '@tarojs/components'
+import { AtSlider, AtList, AtListItem } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
 import CanvasUtils from '../../utils/CanvasUtils'
+import FunLC from '../../utils/FunLC'
 
 type PageStateProps = {
   counterStore: {
@@ -20,7 +21,7 @@ type PageStateProps = {
     yShowValue: number
     kShowValue: number
     gini: number
-    setAngle: Function
+    setFunIndex: Function
     setShowValue: Function
     setGini: Function
   }
@@ -85,6 +86,12 @@ class Index extends Component {
     changeValueStore.setGini(value)
   }
 
+  setFunIndex = (value: string) => {
+    const { changeValueStore } = this.props
+    changeValueStore.setFunIndex(parseInt(value))
+    this.dorwLC();
+  }
+
   setXShowValue = (value: number) => {
     const { changeValueStore } = this.props
     changeValueStore.setShowValue(value)
@@ -117,7 +124,8 @@ class Index extends Component {
   }
 
   render() {
-    const { changeValueStore: { gini, xShowValue } } = this.props
+    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+    const selector = FunLC.map(item => item.name);
     return (
       <View className='panel__content'>
         {/* <Button onClick={this.increment}>+</Button>
@@ -129,7 +137,19 @@ class Index extends Component {
           <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
           <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
         </View>
-
+        <Picker
+          mode='selector'
+          range={selector}
+          value={funIndex}
+          onChange={(e) => { this.setFunIndex(e.detail.value) }}
+        >
+          <AtList>
+            <AtListItem
+              title='模型函数'
+              extraText={selector[funIndex]}
+            />
+          </AtList>
+        </Picker>
         <View className='example-item'>
           <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
           <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>

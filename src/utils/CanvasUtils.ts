@@ -147,7 +147,13 @@ export default class CanvasUtils {
         }
 
     }
+    public resetFitPoint() {
+        this.fitPointArr = [];
+    }
 
+    public backFitPoint() {
+        this.fitPointArr.pop();
+    }
     public addFitPoint(fitPoint: Point) {
         this.fitPointArr.push(fitPoint);
     }

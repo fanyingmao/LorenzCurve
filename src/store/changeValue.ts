@@ -12,6 +12,7 @@ const changeValue = observable({
     this.gini = 0;
   },
   setFunIndex(value: number) {
+    console.log('funIndex:'+value);
     this.funIndex = value;
   },
   setShowValue(value: number, yShowValue: number, kShowValue: number) {

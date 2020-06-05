@@ -126,6 +126,25 @@ class Index extends Component {
         break;
     }
     this.mCanvasUtils.drawFitPoint(ctx);
+    this.setState({ fitX: 0, fitY: 0 });
+    ctx.draw();
+  }
+
+  onResetPoint() {
+    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
+    this.mCanvasUtils.initDraw(ctx);
+    this.mCanvasUtils.drawCoordinate(ctx);
+    this.mCanvasUtils.resetFitPoint();
+    this.mCanvasUtils.drawFitPoint(ctx);
+    ctx.draw();
+  }
+
+  onBackPoint() {
+    const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
+    this.mCanvasUtils.initDraw(ctx);
+    this.mCanvasUtils.drawCoordinate(ctx);
+    this.mCanvasUtils.backFitPoint();
+    this.mCanvasUtils.drawFitPoint(ctx);
     ctx.draw();
   }
 
@@ -152,7 +171,7 @@ class Index extends Component {
           >
             <AtList>
               <AtListItem
-                title='拟合方式'
+                title='拟合数据类型'
                 extraText={selector[fitType]}
               />
             </AtList>
@@ -167,10 +186,13 @@ class Index extends Component {
           </View>
           <View className='btn-item'>
             <View className='subitem'>
-              <AtButton type='primary' size='small' onClick={this.onAddPoint.bind(this)}>添加</AtButton>
+              <AtButton type='primary' size='small'  onClick={this.onAddPoint.bind(this)}>添加</AtButton>
             </View>
             <View className='subitem'>
-              <AtButton type='secondary' size='small'>重置</AtButton>
+              <AtButton type='secondary' size='small' onClick={this.onBackPoint.bind(this)}>回退</AtButton>
+            </View>
+            <View className='subitem'>
+              <AtButton type='secondary' size='small' onClick={this.onResetPoint.bind(this)}>重置</AtButton>
             </View>
           </View>
 
