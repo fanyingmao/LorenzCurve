@@ -168,6 +168,14 @@ class Index extends Component {
     this.dorwLC();
   }
 
+  selectRankIndex = (index: number) => {
+    this.setState({
+      rankIndex: index,
+    });
+    this.dorwLC();
+    // this.showToast('index:'+index)
+  }
+
   changeFitStatus() {
     const { fitStatus } = this.state;
     if (fitStatus === 0) {
@@ -184,7 +192,7 @@ class Index extends Component {
       rankIndex: 0,
       resRank: this.mCanvasUtils.resRank
     });
-    this.setFunIndex(this.mCanvasUtils.resRank[0].index.toString());
+    this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
   }
 
   private showToast = (name: string): void => {
@@ -196,7 +204,7 @@ class Index extends Component {
 
   render() {
     const { changeValueStore: { funIndex } } = this.props
-    const { fitX, fitY, fitStatus, fitType, resRank } = this.state;
+    const { fitX, fitY, fitStatus, fitType, resRank,rankIndex } = this.state;
     const selector = ['坐标点', '数据集合', '斜率'];
     return (
 
@@ -248,8 +256,8 @@ class Index extends Component {
             {
               resRank.map((item, index) => {
                 return (
-                  <View key={index}>
-                    <View className='example-item__desc'>{item.index === funIndex}</View>
+                  <View key={index} onClick={this.selectRankIndex.bind(this, index)}>
+                    <View className='example-item__desc'>{index === rankIndex}</View>
                     <View className='example-item__desc'>{item.name}</View>
                     <View className='example-item__desc'>{item.resA}</View>
                     <View className='example-item__desc'>{item.variance}</View>

@@ -17,7 +17,7 @@ export default class CanvasUtils {
     private readonly offset = 10;
     private fitPointArr: Point[];
     private yMax: number;//y轴最大值
-    public resRank: { name: string, resA: number, variance: number, index: number }[];
+    public resRank: { name: string, resA: number, variance: number, funIndex: number }[];
     constructor(width: number) {
         this.width = width;
         this.length = this.width * this.widthRate;
@@ -107,7 +107,6 @@ export default class CanvasUtils {
         this.pointArr = pointArr;
         this.resA = resA;
         this.gini = sumy;
-        console.log('pointArr:' + JSON.stringify(pointArr));
         // }
         this.funLCIndex = funLCIndex;
         // console.log(pointArr);
@@ -191,7 +190,7 @@ export default class CanvasUtils {
         if (pointArr.length >= 2) {
             this.resRank = FunLC.map((item, index) => {
                 let res = FunUtils.searchPointFitStart(item.func, pointArr, item.minA, item.maxA);
-                return { name: item.name, resA: res.resA, variance: res.variance, index }
+                return { name: item.name, resA: res.resA, variance: res.variance, funIndex:index }
             });
             this.resRank.sort((a, b) => {
                 if (a.variance > b.variance) {
