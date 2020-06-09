@@ -1,8 +1,9 @@
 import { Point } from "./IPoint";
+import FunLC from "./FunLC";
 
 export default class FunUtils {
     public static readonly step = 0.001;//微积分的细化度
-    public static readonly BinaryAccuracy = 0.001;//二分查找精度
+    public static readonly BinaryAccuracy = 0.0001;//二分查找精度
     public static readonly DerivativeAccuracy = 0.000001;//斜率计算精度
 
     //0到1的定积分，和点
@@ -69,7 +70,7 @@ export default class FunUtils {
         }
     }
 
-    //获取函数点与实际点的标准差
+    //获取函数点与实际点的方差
     public static getPointVariance(func: Function, a: number, pointArr: Point[]) {
         let res = 0;
         pointArr.forEach(item => {
@@ -80,45 +81,51 @@ export default class FunUtils {
         return res;
     }
 
-    //三段函数谷查找拟合
-    public static searchPointFit(func: Function, pointArr: Point[], minA: number, miniValue: number, maxA: number, maxValue: number) {
+    //函数谷查找拟合
+    public static searchPointFit(func: Function, pointArr: Point[], minA: number, miniValue: number, maxA: number) {
+        const SegmentNum = 4;//分割数
 
-        const midAL = (maxA - minA) / 3 * 1 + minA;
-        const midAH = (maxA - minA) / 3 * 2 + minA;
+        let i: number;
+        let mid0Value = 0;
+        let midA0 = 0;
+        let mid1Value: number = miniValue;
+        let midA1: number = minA;
+        let mid2Value = mid1Value;
+        let midA2 = midA1;
+        for (i = 0; i < SegmentNum; i++) {
+            midA0 = (maxA - minA) / SegmentNum * (i + 1) + minA;
+            mid0Value = this.getPointVariance(func, midA0, pointArr);
+            if (mid0Value > mid1Value) {
+                break;
+            }
+            else {
+                midA2 = midA1;
+                mid2Value = mid1Value
+                midA1 = midA0;
+                mid1Value = mid0Value;
+            }
+        }
 
-        const midLValue = this.getPointVariance(func, midAL, pointArr);
-        const midHValue = this.getPointVariance(func, midAH, pointArr);
-        const resValue = midLValue < midHValue ? midLValue : midHValue;
-
-        if (Math.abs(resValue - (miniValue + maxValue) / 2) < this.BinaryAccuracy) {
-            return { resA: midLValue < midHValue ? midAL : midAH }
+        if (Math.abs(midA1 - minA) < this.BinaryAccuracy) {
+            return { resA: midA1, variance: mid1Value }
         }
         else {
-            const value1 = (miniValue + midLValue) / 2;
-            const value2 = (midLValue + midHValue) / 2;
-            const value3 = (midHValue + maxValue) / 2;
-            if (value1 <= value2 && value1 <= value3) {
-                return this.searchPointFit(func, pointArr, minA, miniValue, midAL, midLValue);
-            }
-            else if (value2 <= value1 && value2 <= value2) {
-                return this.searchPointFit(func, pointArr, midAL, midLValue, midAH, midHValue);
-            }
-            else if (value3 <= value1 && value3 <= value2) {
-                return this.searchPointFit(func, pointArr, midAH, midHValue, maxA, maxValue);
-            }
+            return this.searchPointFit(func, pointArr, midA2, mid2Value, midA0);
         }
     }
 
-    // 三段函数谷查找拟合开始
+    // 函数谷查找拟合开始
     public static searchPointFitStart(func: Function, pointArr: Point[], minA: number, maxA: number) {
-        const maxValue = this.getPointVariance(func, maxA, pointArr);
-        const miniValue = this.getPointVariance(func, minA, pointArr);
+
         // console.log(`maxValue ${maxValue}  miniValue ${miniValue}`);
         if (maxA < minA) {
-            return this.searchPointFit(func, pointArr, maxA, maxValue, minA, miniValue);
+            const maxValue = this.getPointVariance(func, maxA, pointArr);
+            return this.searchPointFit(func, pointArr, maxA, maxValue, minA);
         }
         else {
-            return this.searchPointFit(func, pointArr, minA, miniValue, maxA, maxValue);
+            const miniValue = this.getPointVariance(func, minA, pointArr);
+            return this.searchPointFit(func, pointArr, minA, miniValue, maxA);
         }
     }
+
 }

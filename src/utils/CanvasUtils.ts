@@ -7,7 +7,7 @@ export default class CanvasUtils {
     // private ctx: CanvasContext;
     private width: number;
     private length: number;
-    private gini: number;
+    public gini: number;
     private funLCIndex: number;
     private pointArr: Point[];
     private resA: number;
@@ -17,6 +17,7 @@ export default class CanvasUtils {
     private readonly offset = 10;
     private fitPointArr: Point[];
     private yMax: number;//y轴最大值
+    public resRank: { name: string, resA: number, variance: number, index: number }[];
     constructor(width: number) {
         this.width = width;
         this.length = this.width * this.widthRate;
@@ -98,6 +99,27 @@ export default class CanvasUtils {
         ctx.stroke();
     }
 
+    // 绘制函数模型通过a值绘制
+    public drawFunLineA(ctx: CanvasContext, funLCIndex: number, resA: number) {
+        const length = this.length;
+        // if (this.resA !== resA || this.funLCIndex !== funLCIndex) {
+        const { sumy, pointArr } = FunUtils.getIntegral01(FunLC[funLCIndex].func, resA);
+        this.pointArr = pointArr;
+        this.resA = resA;
+        this.gini = sumy;
+        console.log('pointArr:' + JSON.stringify(pointArr));
+        // }
+        this.funLCIndex = funLCIndex;
+        // console.log(pointArr);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.strokeStyle = '#ff0000';
+        for (let i = 0; i < this.pointArr.length; i++) {
+            ctx.lineTo(this.pointArr[i].x * length, -this.pointArr[i].y * length);
+        }
+        ctx.stroke();
+    }
+
     // 绘制x
     public drapXShow(ctx: CanvasContext, x: number) {
         const length = this.length;
@@ -160,5 +182,32 @@ export default class CanvasUtils {
 
     public clearFitPoint() {
         this.fitPointArr = [];
+    }
+
+    // 开始拟合配置中所有函数并安拟合效果排序
+    public getFuncFitRank() {
+        const pointArr = this.fitPointArr;
+        this.resRank = [];
+        if (pointArr.length >= 2) {
+            this.resRank = FunLC.map((item, index) => {
+                let res = FunUtils.searchPointFitStart(item.func, pointArr, item.minA, item.maxA);
+                return { name: item.name, resA: res.resA, variance: res.variance, index }
+            });
+            this.resRank.sort((a, b) => {
+                if (a.variance > b.variance) {
+                    return 1;
+                }
+                else if (a.variance < b.variance) {
+                    return -1;
+                }
+                else {
+                    return 0;
+                }
+            })
+            console.log('resRank:' + JSON.stringify(this.resRank));
+        }
+        else {
+            throw new Error(`最少需要两个数据点`);
+        }
     }
 }

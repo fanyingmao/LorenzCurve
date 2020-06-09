@@ -97,6 +97,13 @@ class Index extends Component {
     changeValueStore.setShowValue(value)
   }
 
+  private showToast = (name: string): void => {
+    Taro.showToast({
+      icon: 'none',
+      title: name
+    })
+  }
+
   // 绘制背景
   dorwLC = () => {
     const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
@@ -106,7 +113,7 @@ class Index extends Component {
     try {
       this.indexCanvasGg.drawFunLine(ctx, funIndex, gini);
     } catch (error) {
-      console.log('绘制模型函数错误:' + error.message);
+      this.showToast(error.message);
     }
     // 开始绘制
     ctx.draw();
@@ -141,7 +148,7 @@ class Index extends Component {
           mode='selector'
           range={selector}
           value={funIndex}
-          onChange={(e) => { this.setFunIndex(e.detail.value) }}
+          onChange={(e) => { this.setFunIndex(e.detail.value.toString()) }}
         >
           <AtList>
             <AtListItem
