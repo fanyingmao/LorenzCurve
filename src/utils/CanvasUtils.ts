@@ -82,11 +82,12 @@ export default class CanvasUtils {
     // 绘制函数模型曲线
     public drawFunLine(ctx: CanvasContext, funLCIndex: number, gini: number) {
         const length = this.length;
-        if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
-            const { resA, pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
-            this.pointArr = pointArr;
-            this.resA = resA;
-        }
+        // if (this.gini !== gini || this.funLCIndex !== funLCIndex) {
+        const { resA, pointArr } = FunUtils.binarySearchAStart(FunLC[funLCIndex].func, gini, FunLC[funLCIndex].minA, FunLC[funLCIndex].maxA);
+        this.pointArr = pointArr;
+        this.resA = resA;
+        // }
+        console.log('resA:' + this.resA);
         this.funLCIndex = funLCIndex;
         this.gini = gini;
         // console.log(pointArr);
@@ -106,7 +107,7 @@ export default class CanvasUtils {
         const { sumy, pointArr } = FunUtils.getIntegral01(FunLC[funLCIndex].func, resA);
         this.pointArr = pointArr;
         this.resA = resA;
-        this.gini = sumy;
+        this.gini = 1 - 2 * sumy;
         // }
         this.funLCIndex = funLCIndex;
         // console.log(pointArr);
@@ -190,7 +191,7 @@ export default class CanvasUtils {
         if (pointArr.length >= 2) {
             this.resRank = FunLC.map((item, index) => {
                 let res = FunUtils.searchPointFitStart(item.func, pointArr, item.minA, item.maxA);
-                return { name: item.name, resA: res.resA, variance: res.variance, funIndex:index }
+                return { name: item.name, resA: res.resA, variance: res.variance, funIndex: index }
             });
             this.resRank.sort((a, b) => {
                 if (a.variance > b.variance) {

@@ -1,12 +1,12 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Canvas, Picker } from '@tarojs/components'
-import { AtSlider, AtList, AtListItem, AtButton } from 'taro-ui'
+import { AtSlider, AtList, AtListItem, AtButton, AtTextarea } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
 import CanvasUtils from '../../utils/CanvasUtils'
-
+import Data from '../../utils/Data'
 type PageStateProps = {
   counterStore: {
     counter: number
@@ -33,6 +33,8 @@ type StateType = {
   fitStatus: number
   rankIndex: number
   resRank: any[]
+  sampleIndex: number
+  dataStr: string
 }
 
 interface Index {
@@ -60,7 +62,7 @@ class Index extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [] };
+    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: '' };
   }
 
   componentWillMount() {
@@ -169,11 +171,11 @@ class Index extends Component {
   }
 
   selectRankIndex = (index: number) => {
-    this.setState({
-      rankIndex: index,
-    });
-    this.dorwLC();
-    // this.showToast('index:'+index)
+    // this.setState({
+    //   rankIndex: index,
+    // });
+    this.state.rankIndex = index;
+    this.setFunIndex(this.mCanvasUtils.resRank[index].funIndex.toString());
   }
 
   changeFitStatus() {
@@ -186,13 +188,28 @@ class Index extends Component {
         this.showToast(e.message);
         return;
       }
+      this.state.fitStatus = fitStatus === 0 ? 1 : 0;
+      this.state.rankIndex = 0;
+      this.state.resRank = this.mCanvasUtils.resRank;
+      this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
     }
+    else {
+      this.setState({
+        fitStatus: fitStatus === 0 ? 1 : 0,
+        rankIndex: 0,
+        resRank: []
+      })
+    }
+  }
+
+  onDataSelector = (selectIndex: number) => {
+    let dataStr = '';
+    dataStr = Data[selectIndex].data.join(',');
+
     this.setState({
-      fitStatus: fitStatus === 0 ? 1 : 0,
-      rankIndex: 0,
-      resRank: this.mCanvasUtils.resRank
+      sampleIndex: selectIndex,
+      dataStr
     });
-    this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
   }
 
   private showToast = (name: string): void => {
@@ -203,9 +220,10 @@ class Index extends Component {
   }
 
   render() {
-    const { changeValueStore: { funIndex } } = this.props
-    const { fitX, fitY, fitStatus, fitType, resRank,rankIndex } = this.state;
+    const { changeValueStore: { gini } } = this.props
+    const { fitX, fitY, fitStatus, fitType, resRank, rankIndex, sampleIndex, dataStr } = this.state;
     const selector = ['坐标点', '数据集合', '斜率'];
+    const selectorData = Data.map(item => item.name);
     return (
 
       <View className='panel__content'>
@@ -218,7 +236,7 @@ class Index extends Component {
           mode='selector'
           range={selector}
           value={fitType}
-          onChange={(e) => { this.setState({ fitType: e.detail.value }) }}
+          onChange={(e) => { this.setState({ fitType: Number.parseInt(e.detail.value.toString()) }) }}
         >
           <AtList>
             <AtListItem
@@ -231,7 +249,48 @@ class Index extends Component {
 
         <View className='example-item'>
           <View className='example-item' style={{ display: fitStatus === 1 ? 'none' : 'block' }}>
-            <View className='example-item'>
+            <View className='example-item' style={{ display: fitType === 0 ? 'block' : 'none' }}>
+              <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
+              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+
+              <View className='example-item__desc'>y值:{fitY.toFixed(3)}</View>
+              <AtSlider value={fitY * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
+
+            </View>
+            <View className='example-item' style={{ display: fitType === 1 ? 'block' : 'none' }}>
+              <Picker
+                mode='selector'
+                range={selectorData}
+                value={sampleIndex}
+                onChange={(e) => {
+                  this.onDataSelector(Number.parseInt(e.detail.value.toString()))
+                }}
+              >
+                <AtList>
+                  <AtListItem
+                    title='样例数据'
+                    extraText={selectorData[sampleIndex]}
+                  />
+                </AtList>
+              </Picker>
+              <View className='example-item'>
+                <AtTextarea
+                  count={false}
+                  value={dataStr}
+                  onChange={(value) => {
+                    if ('0123456789.,'.includes(value)) {
+                      this.setState({ dataStr: value });
+                    }
+                    else {
+                      this.showToast('输入内容必须是数字或英文逗号');
+                    }
+                  }}
+                  maxLength={200}
+                  placeholder='输入数据以逗号分割'
+                />
+              </View>
+            </View>
+            <View className='example-item' style={{ display: fitType === 2 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
               <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
 
@@ -240,6 +299,7 @@ class Index extends Component {
 
             </View>
             <View className='btn-item'>
+
               <View className='subitem'>
                 <AtButton type='primary' size='small' onClick={this.onAddPoint.bind(this)}>添加</AtButton>
               </View>
@@ -253,6 +313,7 @@ class Index extends Component {
           </View>
           <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
+            <View className='example-item__desc'>基尼系数:{gini}</View>
             {
               resRank.map((item, index) => {
                 return (
