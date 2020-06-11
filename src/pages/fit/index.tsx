@@ -123,30 +123,38 @@ class Index extends Component {
   }
 
   onAddPoint() {
-    const { fitX, fitY, fitType } = this.state;
+    const { fitX, fitY, fitType, dataStr } = this.state;
+    if (fitX <= fitY && fitType === 0) {
+      this.showToast('y值必须小于x值');
+      return;
+    }
+
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
-    if (fitX <= fitY) {
-      this.showToast('y值必须小于x值');
+
+    switch (fitType) {
+      case 0:
+        this.mCanvasUtils.addFitPoint({ type: 0, x: fitX, y: fitY });
+        this.setState({ fitX: 0, fitY: 0 });
+        break;
+      case 1:
+        this.mCanvasUtils.addDataStr(dataStr);
+        break;
+      case 2:
+        break;
     }
-    else {
-      switch (fitType) {
-        case 0:
-          this.mCanvasUtils.addFitPoint({ type: 0, x: fitX, y: fitY });
-          break;
-        case 1:
-          break;
-        case 2:
-          break;
-      }
-      this.mCanvasUtils.drawFitPoint(ctx);
-      this.setState({ fitX: 0, fitY: 0 });
-      ctx.draw();
-    }
+    this.mCanvasUtils.drawFitPoint(ctx);
+    ctx.draw();
   }
 
   onResetPoint() {
+    const { fitType } = this.state;
+    if (fitType === 2) {
+      this.setState({
+        dataStr: ''
+      });
+    }
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
@@ -285,7 +293,7 @@ class Index extends Component {
                       this.showToast('输入内容必须是数字或英文逗号');
                     }
                   }}
-                  maxLength={200}
+                  maxLength={400}
                   placeholder='输入数据以逗号分割'
                 />
               </View>

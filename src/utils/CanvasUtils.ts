@@ -179,7 +179,30 @@ export default class CanvasUtils {
     public addFitPoint(fitPoint: Point) {
         this.fitPointArr.push(fitPoint);
     }
-
+    public addDataStr(dataStr: String) {
+        this.clearFitPoint();
+        const dataArr = dataStr.split(',').map(item => Number.parseInt(item));
+        let sum = 0;
+        dataArr.sort();
+        const stepRate = 1 / (2 * dataArr.length);
+        dataArr.forEach(item => {
+            sum += 2 * item;
+        })
+        let sumUp = 0;
+        let currentRate = 0;
+        for (let i = 0; i < dataArr.length; i++) {
+           
+            if (i !== 0) {
+                const item = dataArr[i - 1];
+                sumUp += 2 * item;
+                currentRate += 2 * stepRate;
+            }
+            const x = currentRate + stepRate;
+            const y = (sumUp + dataArr[i]) / sum;
+            console.log(JSON.stringify({x,y}));
+            this.addFitPoint({ type: 0, x, y });
+        }
+    }
     public clearFitPoint() {
         this.fitPointArr = [];
     }
