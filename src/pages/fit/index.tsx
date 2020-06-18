@@ -139,6 +139,10 @@ class Index extends Component {
         this.setState({ fitX: 0, fitY: 0 });
         break;
       case 1:
+        if (!/^[0123456789.,]+$/.test(dataStr)) {
+          this.showToast('输入内容必须是数字或英文逗号');
+          return;
+        }
         this.mCanvasUtils.addDataStr(dataStr);
         break;
       case 2:
@@ -286,12 +290,7 @@ class Index extends Component {
                   count={false}
                   value={dataStr}
                   onChange={(value) => {
-                    if ('0123456789.,'.includes(value)) {
                       this.setState({ dataStr: value });
-                    }
-                    else {
-                      this.showToast('输入内容必须是数字或英文逗号');
-                    }
                   }}
                   maxLength={400}
                   placeholder='输入数据以逗号分割'
