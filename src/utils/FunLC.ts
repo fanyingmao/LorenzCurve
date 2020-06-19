@@ -33,7 +33,7 @@ const configList: ConfigItem[] = [
         },
         maxA: 1,
         minA: 0.01,
-        from: '模型来自于中科大论文'
+        from: '模型来自于知乎网友'
     },
 ]
 export default configList;

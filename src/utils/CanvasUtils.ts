@@ -179,7 +179,7 @@ export default class CanvasUtils {
     public addFitPoint(fitPoint: Point) {
         this.fitPointArr.push(fitPoint);
     }
-    public addDataStr(dataStr: String) {
+    public addDataStr(dataStr: string) {
         this.clearFitPoint();
         let dataArr = dataStr.split(',').map(item => Number.parseInt(item));
         let sum = 0;
@@ -207,6 +207,7 @@ export default class CanvasUtils {
             y = Math.floor(y * 10000) / 10000;
             this.addFitPoint({ type: 0, x, y });
         }
+        return sum/(2*dataArr.length);
     }
     public clearFitPoint() {
         this.fitPointArr = [];
