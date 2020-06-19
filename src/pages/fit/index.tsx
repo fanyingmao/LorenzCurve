@@ -1,12 +1,13 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Canvas, Picker } from '@tarojs/components'
-import { AtSlider, AtList, AtListItem, AtButton, AtTextarea } from 'taro-ui'
+import { AtSlider, AtList, AtListItem, AtButton, AtTextarea, AtIcon } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
 import CanvasUtils from '../../utils/CanvasUtils'
 import Data from '../../utils/Data'
+
 type PageStateProps = {
   counterStore: {
     counter: number
@@ -39,7 +40,7 @@ type StateType = {
 }
 
 interface Index {
-  props: PageStateProps,
+  props: PageStateProps
   state: StateType
 }
 
@@ -77,7 +78,11 @@ class Index extends Component {
   }
 
   componentDidMount() {
+    this.dorwLC();
+  }
 
+  componentDidUpdate(){
+    this.dorwLC();
   }
 
   componentWillUnmount() { }
@@ -183,10 +188,10 @@ class Index extends Component {
   }
 
   selectRankIndex = (index: number) => {
-    // this.setState({
-    //   rankIndex: index,
-    // });
-    this.state.rankIndex = index;
+    this.setState({
+      rankIndex: index,
+    });
+    // this.state.rankIndex = index;
     this.setFunIndex(this.mCanvasUtils.resRank[index].funIndex.toString());
   }
 
@@ -239,7 +244,7 @@ class Index extends Component {
     const { fitX, fitY, fitStatus, fitType, resRank, rankIndex, sampleIndex, dataStr, dataAvg } = this.state;
     const selector = ['坐标点', '数据集合', '斜率'];
     const selectorData = Data.map(item => item.name);
-    this.dorwLC();
+   
     return (
 
       <View className='panel__content'>
@@ -306,7 +311,7 @@ class Index extends Component {
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
               <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
 
-              
+
             </View>
             <View className='btn-item'>
 
@@ -323,15 +328,23 @@ class Index extends Component {
           </View>
           <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
-            <View className='example-item__desc'>基尼系数:{gini}</View>
+            <View className='example-item__desc__top'>基尼系数: {gini}</View>
+            <View className='component-list__item'>
+        
+              <View className='example-item__desc'>函数名</View>
+              <View className='example-item__desc'>方差</View>
+              <View className='example-item__desc'>a值</View>
+            </View>
             {
               resRank.map((item, index) => {
                 return (
-                  <View key={index} onClick={this.selectRankIndex.bind(this, index)}>
-                    <View className='example-item__desc'>{index === rankIndex}</View>
+                  <View className='component-list__item' key={item.name} onClick={this.selectRankIndex.bind(this, index)}>
+                    <View style={{ visibility: index === rankIndex ? 'visible' : 'hidden' }}>
+                      <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
+                    </View>
                     <View className='example-item__desc'>{item.name}</View>
+                    <View className='example-item__desc'>{item.variance * 10000}</View>
                     <View className='example-item__desc'>{item.resA}</View>
-                    <View className='example-item__desc'>{item.variance}</View>
                   </View>
                 )
               })

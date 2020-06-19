@@ -1,5 +1,8 @@
 .panel__content .example-item__desc {
     margin-left: 18PX;
+    &__top{
+      margin-top: 20PX;
+    }
   }
   
   .tab-content {

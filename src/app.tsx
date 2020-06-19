@@ -30,10 +30,11 @@ class App extends Component {
   // eslint-disable-next-line react/sort-comp
   config: Config = {
     pages: [
+   
       'pages/fit/index',
       'pages/index/index',
       'pages/function/index',
-      'pages/help/index'
+      'pages/help/index',
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -71,7 +72,7 @@ class App extends Component {
       color: '#333',
       selectedColor: '#006ea6',
       backgroundColor: '#fff',
-      borderStyle: 'white',
+      borderStyle: 'black',
     }
 
   }

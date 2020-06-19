@@ -10,7 +10,7 @@ const configList: ConfigItem[] = [
     {
         name: 'f0',
         func: function (x: number, a: number) {
-            return 1 - Math.log((1-x) * (Math.exp(a) - 1) + 1)/a;
+            return (Math.exp(a * x) - 1) / (Math.exp(a) - 1);
         },
         maxA: 100,
         minA: 0.01,
@@ -34,6 +34,15 @@ const configList: ConfigItem[] = [
         maxA: 1,
         minA: 0.01,
         from: '模型来自于知乎网友'
+    },
+    {
+        name: 'mf0',
+        func: function (x: number, a: number) {
+            return 1 - Math.log((1-x) * (Math.exp(a) - 1) + 1)/a;
+        },
+        maxA: 100,
+        minA: 0.01,
+        from: 'f0的镜像'
     },
 ]
 export default configList;
