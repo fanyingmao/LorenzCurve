@@ -73,8 +73,6 @@ class Index extends Component {
     changeValueStore.setGini(value)
   }
 
-
-
   render() {
     const { changeValueStore: { gini } } = this.props;
     return (

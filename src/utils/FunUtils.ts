@@ -73,7 +73,13 @@ export default class FunUtils {
     public static getPointVariance(func: Function, a: number, pointArr: Point[]) {
         let res = 0;
         pointArr.forEach(item => {
-            const temy = Math.pow(func(item.x, a) - item.y, 2);
+            let temy = 0;
+            if (item.type === 0) {
+                temy = Math.pow(func(item.x, a) - item.y, 2);
+            }
+            else {
+                temy = Math.pow(item.y / this.getDerivative(func, a, item.x) - 1, 2);
+            }
             res += temy;
         })
         res = res / pointArr.length;

@@ -76,7 +76,7 @@ export default class CanvasUtils {
         ctx.fillText("1", length - 3, 16);
         ctx.fillText("1", - 10, -length + 6);
         ctx.fillText("(1,1)", length - 16, -length - 8);
-
+        this.gini = 0;
     }
 
     // 绘制函数模型曲线
@@ -154,13 +154,12 @@ export default class CanvasUtils {
         // ctx.strokeStyle = '#00974e';
         // ctx.stroke();
     }
-
+    
+    //画点
     public drawFitPoint(ctx: CanvasContext) {
         const length = this.length;
-
-
-        ctx.fillStyle = '#ff0000';
-
+        ctx.fillStyle = '#893f95';
+        console.log('======drawFitPoint');
         for (let i = 0; i < this.fitPointArr.length; i++) {
             ctx.beginPath();
             ctx.arc(Math.floor(this.fitPointArr[i].x * length), Math.floor(-this.fitPointArr[i].y * length), 2, 0, 2 * Math.PI, true);
@@ -168,6 +167,25 @@ export default class CanvasUtils {
             ctx.closePath();
         }
 
+    }
+
+    //画斜率
+    public drawFitPoint2(ctx: CanvasContext) {
+        const length = this.length;
+        const fun: Function = this.gini === 0 ? (x: number) => x : (x: number) => FunLC[this.funLCIndex].func(x, this.resA);
+        const xtem = 0.01;
+        ctx.beginPath();
+        ctx.strokeStyle = '#893f95';
+        ctx.setLineWidth(1);
+        for (let i = 0; i < this.fitPointArr.length; i++) {
+            const x = this.fitPointArr[i].x;
+            const y = fun(x);
+            const ytem = xtem * this.fitPointArr[i].y;
+            ctx.moveTo((x - xtem) * length, -(y - ytem) * length);
+            ctx.lineTo((x + xtem) * length, -(y + ytem) * length);
+        }
+        ctx.stroke();
+        ctx.closePath();
     }
     public resetFitPoint() {
         this.fitPointArr = [];
@@ -207,7 +225,7 @@ export default class CanvasUtils {
             y = Math.floor(y * 10000) / 10000;
             this.addFitPoint({ type: 0, x, y });
         }
-        return sum/(2*dataArr.length);
+        return sum / (2 * dataArr.length);
     }
     public clearFitPoint() {
         this.fitPointArr = [];

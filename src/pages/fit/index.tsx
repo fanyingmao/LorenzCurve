@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Canvas, Picker } from '@tarojs/components'
-import { AtSlider, AtList, AtListItem, AtButton, AtTextarea, AtIcon } from 'taro-ui'
+import { AtSlider, AtList, AtListItem, AtButton, AtTextarea, AtIcon, AtInput } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
@@ -81,13 +81,15 @@ class Index extends Component {
     this.dorwLC();
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     this.dorwLC();
   }
 
   componentWillUnmount() { }
 
-  componentDidShow() { }
+  componentDidShow() {
+    this.dorwLC();
+  }
 
   componentDidHide() { }
 
@@ -114,14 +116,21 @@ class Index extends Component {
   // 绘制表盘
   dorwLC = () => {
     const { changeValueStore: { funIndex } } = this.props;
-    const { fitStatus, rankIndex, resRank } = this.state;
+    const { fitStatus, rankIndex, resRank, fitType } = this.state;
+
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
-    this.mCanvasUtils.drawFitPoint(ctx);
+
     if (fitStatus === 1) {
       this.mCanvasUtils.drawFunLineA(ctx, funIndex, resRank[rankIndex].resA);
       this.setGini(this.mCanvasUtils.gini);
+    }
+    if (fitType === 2) {
+      this.mCanvasUtils.drawFitPoint2(ctx);
+    }
+    else {
+      this.mCanvasUtils.drawFitPoint(ctx);
     }
     // // 开始绘制
     ctx.draw();
@@ -142,6 +151,7 @@ class Index extends Component {
       case 0:
         this.mCanvasUtils.addFitPoint({ type: 0, x: fitX, y: fitY });
         this.setState({ fitX: 0, fitY: 0 });
+        this.mCanvasUtils.drawFitPoint(ctx);
         break;
       case 1:
         if (!/^[0123456789.,]+$/.test(dataStr)) {
@@ -150,35 +160,42 @@ class Index extends Component {
         }
         const avg = this.mCanvasUtils.addDataStr(dataStr);
         this.setState({ dataAvg: avg });
+        this.mCanvasUtils.drawFitPoint(ctx);
         break;
       case 2:
+        this.mCanvasUtils.addFitPoint({ type: 1, x: fitX, y: fitY });
+        this.setState({ fitX: 0, fitY: 0 });
+        this.mCanvasUtils.drawFitPoint2(ctx, (x: number) => x);
         break;
     }
-    this.mCanvasUtils.drawFitPoint(ctx);
-    ctx.draw();
+
+    // ctx.draw();
   }
 
   onResetPoint() {
-    const { fitType } = this.state;
-    if (fitType === 2) {
-      this.setState({
-        dataStr: ''
-      });
-    }
+    this.setState({
+      dataStr: '',
+      fitStatus: 0
+    });
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
     this.mCanvasUtils.resetFitPoint();
-    this.mCanvasUtils.drawFitPoint(ctx);
     ctx.draw();
   }
 
   onBackPoint() {
+    const { fitType } = this.state;
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
     this.mCanvasUtils.backFitPoint();
-    this.mCanvasUtils.drawFitPoint(ctx);
+    if (fitType === 2) {
+      this.mCanvasUtils.drawFitPoint2(ctx, (x: number) => x);
+    }
+    else {
+      this.mCanvasUtils.drawFitPoint(ctx);
+    }
     ctx.draw();
   }
 
@@ -244,7 +261,7 @@ class Index extends Component {
     const { fitX, fitY, fitStatus, fitType, resRank, rankIndex, sampleIndex, dataStr, dataAvg } = this.state;
     const selector = ['坐标点', '数据集合', '斜率'];
     const selectorData = Data.map(item => item.name);
-   
+
     return (
 
       <View className='panel__content'>
@@ -310,9 +327,16 @@ class Index extends Component {
             <View className='example-item' style={{ display: fitType === 2 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
               <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
-
-
+              <AtInput
+                name='value5'
+                title='斜率'
+                type='digit'
+                placeholder='请输入斜率值'
+                value={fitY.toString()}
+                onChange={(value: string) => { this.setState({ fitY: value ? Number.parseFloat(value) : 0 }); }}
+              />
             </View>
+
             <View className='btn-item'>
 
               <View className='subitem'>
@@ -328,9 +352,11 @@ class Index extends Component {
           </View>
           <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
-            <View className='example-item__desc__top'>基尼系数: {gini}</View>
+            <View className='example-item__desc__top'>基尼系数: {gini.toPrecision(10)}</View>
             <View className='component-list__item'>
-        
+              {/* <View style={{ visibility: 'hidden' }}>
+                <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
+              </View> */}
               <View className='example-item__desc'>函数名</View>
               <View className='example-item__desc'>方差</View>
               <View className='example-item__desc'>a值</View>
@@ -343,8 +369,8 @@ class Index extends Component {
                       <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
                     </View>
                     <View className='example-item__desc'>{item.name}</View>
-                    <View className='example-item__desc'>{item.variance * 10000}</View>
-                    <View className='example-item__desc'>{item.resA}</View>
+                    <View className='example-item__desc'>{(item.variance * 10000).toPrecision(10)}</View>
+                    <View className='example-item__desc'>{item.resA.toPrecision(10)}</View>
                   </View>
                 )
               })

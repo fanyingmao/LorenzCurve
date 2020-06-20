@@ -84,7 +84,7 @@ class Index extends Component {
     return (
       <View className='panel__content'>
         <View className='example-item__desc'>1、程序用途
-        <View className='example-item__desc'>一、通过获得的部分数据来拟合出洛伦兹曲线获得基尼系数。</View>
+        <View className='example-item__desc'>一、通过获得的少量数据来拟合出洛伦兹曲线获得基尼系数。</View>
           <View className='example-item__desc'>二、通过洛伦兹曲线和平均值可得到对应数据斜率值和数据在数据集合排在百分之几的位置。</View>
           <View className='example-item__desc'>三、模拟不同基尼系数下的数据集合分布。</View>
         </View>
@@ -101,7 +101,7 @@ class Index extends Component {
         <View className='example-item__desc'>3、关于误差
         <View className='example-item__desc'>一、数据误差，拟合数据本身的误差和数据量不足导致拟合的误差。</View>
           <View className='example-item__desc'>二、模型误差，洛伦兹曲线是统计的结果所以并不能够找到完全没有误差的拟合函数，这里是通过对已有数据选取出拟合效果最好的函数。</View>
-          <View className='example-item__desc'>三、运算误差，为了不每个函数都对应去求其积分函数和导函数，还有对a值都查找都是采用尽量小的微分逼近的真实值的。考虑到运算量与数值精度所以会存在一定误差。</View>
+          <View className='example-item__desc'>三、运算误差，为了不每个函数都对应去求其积分函数和导函数，还有对a值都查找都是采用尽量小的微分逼近的准确值的。考虑到运算量与数值精度所以会存在一定误差。</View>
           <View className='example-item__desc'>鉴于以上误差，结果只能做一个粗略参考。</View>
         </View>
         <View className='example-item__desc'>4、关于反馈
