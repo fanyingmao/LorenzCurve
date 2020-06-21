@@ -153,8 +153,9 @@ export default class CanvasUtils {
         // ctx.lineTo(x * this.length + klen, -y * this.length - klen * k);
         // ctx.strokeStyle = '#00974e';
         // ctx.stroke();
+        return k;
     }
-    
+
     //画点
     public drawFitPoint(ctx: CanvasContext) {
         const length = this.length;

@@ -6,10 +6,12 @@ const changeValue = observable({
   yShowValue: 0.5,
   kShowValue: 0.5,
   gini: 0.5,
+  avg:1,
   changeValueStore() {
     this.funIndex = 0;
     this.xShowValue = 0;
     this.gini = 0;
+    this.avg = 1;
   },
   setFunIndex(value: number) {
     console.log('funIndex:'+value);
@@ -22,6 +24,9 @@ const changeValue = observable({
   },
   setGini(value: number) {
     this.gini = value;
+  },
+  setAvg(value: number) {
+    this.avg = value;
   },
 })
 export default changeValue

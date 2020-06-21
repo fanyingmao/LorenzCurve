@@ -67,7 +67,7 @@ view {
     &__desc {
       margin-bottom: 12px;
       color: #333;
-      font-size: 24px;
+      font-size: 32px;
     }
     &__line{
       @include hairline-bottom();
@@ -157,4 +157,8 @@ view {
 
 .component-margin-bottom {
   margin-bottom: 24px;
+}
+
+.component-pain-bottom {
+  padding-bottom: 80px;
 }

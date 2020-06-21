@@ -30,9 +30,8 @@ class App extends Component {
   // eslint-disable-next-line react/sort-comp
   config: Config = {
     pages: [
-   
-      'pages/fit/index',
       'pages/index/index',
+      'pages/fit/index',
       'pages/function/index',
       'pages/help/index',
     ],

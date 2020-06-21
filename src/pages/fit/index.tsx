@@ -21,9 +21,11 @@ type PageStateProps = {
     yShowValue: number
     kShowValue: number
     gini: number
+    avg: number
     setAngle: Function
     setShowValue: Function
     setGini: Function
+    setAvg: Function
     setFunIndex: Function
   }
 }
@@ -36,7 +38,6 @@ type StateType = {
   resRank: any[]
   sampleIndex: number
   dataStr: string
-  dataAvg: number
 }
 
 interface Index {
@@ -57,14 +58,14 @@ class Index extends Component {
    */
   // eslint-disable-next-line react/sort-comp
   config: Config = {
-    navigationBarTitleText: '系数'
+    navigationBarTitleText: '拟合'
   }
   private readonly sliderMax = 100;
   mCanvasUtils: CanvasUtils;
 
   constructor(props) {
     super(props);
-    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: '', dataAvg: 0 };
+    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: ''};
   }
 
   componentWillMount() {
@@ -106,6 +107,11 @@ class Index extends Component {
   setGini = (value: number) => {
     const { changeValueStore } = this.props
     changeValueStore.setGini(value)
+  }
+
+  setAvg = (value: number) => {
+    const { changeValueStore } = this.props
+    changeValueStore.setAvg(value)
   }
 
   setXShowValue = (value: number) => {
@@ -158,7 +164,7 @@ class Index extends Component {
           return;
         }
         const avg = this.mCanvasUtils.addDataStr(dataStr);
-        this.setState({ dataAvg: avg });
+        this.setAvg(avg);
         this.mCanvasUtils.drawFitPoint(ctx);
         break;
       case 2:
@@ -190,7 +196,7 @@ class Index extends Component {
     this.mCanvasUtils.drawCoordinate(ctx);
     this.mCanvasUtils.backFitPoint();
     if (fitType === 2) {
-      this.mCanvasUtils.drawFitPoint2(ctx, (x: number) => x);
+      this.mCanvasUtils.drawFitPoint2(ctx);
     }
     else {
       this.mCanvasUtils.drawFitPoint(ctx);
@@ -244,12 +250,16 @@ class Index extends Component {
 
   onDataSelector = (selectIndex: number) => {
     let dataStr = '';
-    dataStr = Data[selectIndex].data.join(',');
+    const data = Data[selectIndex].data;
+    if (data) {
+      dataStr = data.join(',');
+    }
     this.onResetPoint();
     this.setState({
       sampleIndex: selectIndex,
       dataStr,
-      dataAvg: 0
+    }, () => {
+      this.setAvg(1);
     });
   }
 
@@ -261,33 +271,33 @@ class Index extends Component {
   }
 
   render() {
-    const { changeValueStore: { gini } } = this.props
-    const { fitX, fitY, fitStatus, fitType, resRank, rankIndex, sampleIndex, dataStr, dataAvg } = this.state;
+    const { changeValueStore: { gini, avg } } = this.props
+    const { fitX, fitY, fitStatus, fitType, resRank, rankIndex, sampleIndex, dataStr } = this.state;
     const selector = ['坐标点', '数据集合', '斜率'];
     const selectorData = Data.map(item => item.name);
 
     return (
 
-      <View className='panel__content'>
-      <View className='component-margin-left component-margin-right'>
-        {/* <Button onClick={this.increment}>+</Button>
+      <View className='panel__content component-pain-bottom'>
+        <View className='component-margin-left component-margin-right'>
+          {/* <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text> */}
-        {/* 表盘绘制 */}
-        <Picker
-          mode='selector'
-          range={selector}
-          value={fitType}
-          onChange={(e) => { this.onResetPoint(); this.setState({ fitType: Number.parseInt(e.detail.value.toString()) }) }}
-        >
-          <AtList>
-            <AtListItem
-              title='拟合数据类型'
-              extraText={selector[fitType]}
-            />
-          </AtList>
-        </Picker>
+          {/* 表盘绘制 */}
+          <Picker
+            mode='selector'
+            range={selector}
+            value={fitType}
+            onChange={(e) => { this.onResetPoint(); this.setState({ fitType: Number.parseInt(e.detail.value.toString()) }) }}
+          >
+            <AtList>
+              <AtListItem
+                title='拟合数据类型'
+                extraText={selector[fitType]}
+              />
+            </AtList>
+          </Picker>
         </View>
 
         <Canvas canvasId='fitCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
@@ -296,10 +306,10 @@ class Index extends Component {
           <View className='example-item' style={{ display: fitStatus === 1 ? 'none' : 'block' }}>
             <View className='example-item' style={{ display: fitType === 0 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
-              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
 
               <View className='example-item__desc'>y值:{fitY.toFixed(3)}</View>
-              <AtSlider value={fitY * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
+              <AtSlider value={fitY * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
 
             </View>
             <View className='example-item' style={{ display: fitType === 1 ? 'block' : 'none' }}>
@@ -318,13 +328,15 @@ class Index extends Component {
                   />
                 </AtList>
               </Picker>
-              <View className='example-item__desc component-margin-top'>平均值:{dataAvg}</View>
+              <View className='example-item__desc component-margin-top'>平均值:{avg}</View>
               <View className='example-item'>
                 <AtTextarea
                   count={false}
                   value={dataStr}
                   onChange={(value) => {
-                    this.setState({ dataStr: value, dataAvg: 0 });
+                    this.setState({ dataStr: value }, () => {
+                      this.setAvg(1);
+                    });
                   }}
                   maxLength={400}
                   placeholder='输入数据以逗号分割'
@@ -333,7 +345,7 @@ class Index extends Component {
             </View>
             <View className='example-item' style={{ display: fitType === 2 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
-              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
               <AtInput
                 name='value5'
                 title='斜率'
@@ -358,7 +370,7 @@ class Index extends Component {
             </View>
           </View>
           <View className='component-margin-top component-margin-bottom'>
-          <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
+            <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
           </View>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
             <View className='example-item__desc__top'>基尼系数: {gini.toPrecision(10)}</View>

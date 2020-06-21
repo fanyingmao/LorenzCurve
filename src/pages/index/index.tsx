@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Canvas, Picker } from '@tarojs/components'
-import { AtSlider, AtList, AtListItem } from 'taro-ui'
+import { AtSlider, AtList, AtListItem, AtInput } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
@@ -21,14 +21,19 @@ type PageStateProps = {
     yShowValue: number
     kShowValue: number
     gini: number
+    avg: number
     setFunIndex: Function
     setShowValue: Function
     setGini: Function
+    setAvg: Function
   }
 }
-
+type StateType = {
+  k: number
+}
 interface Index {
   props: PageStateProps
+  state: StateType
 }
 
 @inject('changeValueStore')
@@ -88,6 +93,11 @@ class Index extends Component {
     changeValueStore.setGini(value)
   }
 
+  setAvg = (value: number) => {
+    const { changeValueStore } = this.props
+    changeValueStore.setAvg(value)
+  }
+
   setFunIndex = (value: string) => {
     const { changeValueStore } = this.props
     changeValueStore.setFunIndex(parseInt(value))
@@ -108,7 +118,7 @@ class Index extends Component {
 
   // 绘制背景
   dorwLC = () => {
-    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+    const { changeValueStore: { gini, funIndex } } = this.props
     const ctx = Taro.createCanvasContext('indexCanvasGg', this.$scope);
     this.indexCanvasGg.initDraw(ctx);
     this.indexCanvasGg.drawCoordinate(ctx);
@@ -124,28 +134,26 @@ class Index extends Component {
 
   // 绘制X
   dorwX = () => {
-    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+    const { changeValueStore: { xShowValue } } = this.props
     const ctx = Taro.createCanvasContext('indexCanvasX', this.$scope);
     this.indexCanvasGg.initDraw(ctx);
-    this.indexCanvasGg.drapXShow(ctx, xShowValue);
+    const k = this.indexCanvasGg.drapXShow(ctx, xShowValue);
+    this.setState({ k });
     // 开始绘制
     ctx.draw();
   }
 
   render() {
-    const { changeValueStore: { gini, xShowValue, funIndex } } = this.props
+    const { changeValueStore: { gini, xShowValue, funIndex, avg } } = this.props
+    const { k } = this.state;
     const selector = FunLC.map(item => item.name);
     return (
-      <View className='panel__content'>
+      <View className='panel__content component-pain-bottom'>
         {/* <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text> */}
         {/* 表盘绘制 */}
-        <View className='example-item'>
-          <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
-          <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
-        </View>
         <View className='component-margin-left component-margin-right'>
           <Picker
             mode='selector'
@@ -160,9 +168,24 @@ class Index extends Component {
               />
             </AtList>
           </Picker>
+        </View>
+        <View className='example-item'>
+          <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
+          <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
+        </View>
+        <View className='component-margin-left component-margin-right'>
+          <View className='example-item__desc component-margin-top'>k乘平均值: {(k * avg).toFixed(3)}</View>
+          <AtInput
+            name='value4'
+            title='平均值'
+            type='digit'
+            placeholder='请输入平均值'
+            value={avg.toString()}
+            onChange={(value: string) => { this.setAvg(value ? Number.parseFloat(value) : 1); }}
+          />
           <View className='example-item'>
             <View className='example-item__desc component-margin-top'>基尼系数:{gini.toFixed(3)}</View>
-            <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+            <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax);this.dorwLC();}} ></AtSlider>
 
             <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
             <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>

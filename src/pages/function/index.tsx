@@ -77,7 +77,7 @@ class Index extends Component {
   getFunName = (func: Function) => {
     const macthArr = func.toString().match(/return.*;/);
     if (macthArr && macthArr.length > 0) {
-      return macthArr[0].replace('return ', '').replace(';', '');
+      return macthArr[0].replace('return ', '').replace(';', '').replace(/Math./g, '');
     }
     else {
       return null;
@@ -85,17 +85,17 @@ class Index extends Component {
   }
   render() {
     return (
-      <View className='component-margin-left component-margin-right'>
+      <View className='component-margin-left component-margin-right component-pain-bottom'>
         <View className='component-list__item' >
           <View className='example-item__desc'>函数名</View>
-          <View className='example-item__desc'>函数js表达式</View>
+          <View className='example-item__desc'>函数js表达式(Math.省略)</View>
         </View>
         <View>
           {
             FunLC.map((item) => {
               return (
                 <View className='component-list__item' key={item.name} >
-                  <View className='example-item__desc'>{item.name}</View>
+                  <View className='example-item__desc'>{item.name}(x) =</View>
                   <View className='example-item__desc'>{this.getFunName(item.func)}</View>
                 </View>
               )
