@@ -146,27 +146,30 @@ class Index extends Component {
           <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
           <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
         </View>
-        <Picker
-          mode='selector'
-          range={selector}
-          value={funIndex}
-          onChange={(e) => { this.setFunIndex(e.detail.value.toString()) }}
-        >
-          <AtList>
-            <AtListItem
-              title='模型函数'
-              extraText={selector[funIndex]}
-            />
-          </AtList>
-        </Picker>
-        <View className='example-item'>
-          <View className='example-item__desc'>基尼系数:{gini.toFixed(3)}</View>
-          <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
+        <View className='component-margin-left component-margin-right'>
+          <Picker
+            mode='selector'
+            range={selector}
+            value={funIndex}
+            onChange={(e) => { this.setFunIndex(e.detail.value.toString()) }}
+          >
+            <AtList>
+              <AtListItem
+                title='模型函数'
+                extraText={selector[funIndex]}
+              />
+            </AtList>
+          </Picker>
+          <View className='example-item'>
+            <View className='example-item__desc component-margin-top'>基尼系数:{gini.toFixed(3)}</View>
+            <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setGini(value / this.sliderMax) }} onChange={() => { this.dorwLC(); }} ></AtSlider>
 
-          <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-          <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
+            <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
+            <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
+          </View>
         </View>
       </View>
+
     )
   }
 }

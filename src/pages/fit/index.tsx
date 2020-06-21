@@ -82,7 +82,7 @@ class Index extends Component {
   }
 
   componentDidUpdate() {
-   
+
   }
 
   componentWillUnmount() { }
@@ -207,9 +207,9 @@ class Index extends Component {
   selectRankIndex = (index: number) => {
     this.setState({
       rankIndex: index,
+    }, () => {
+      this.setFunIndex(this.mCanvasUtils.resRank[index].funIndex.toString());
     });
-    // this.state.rankIndex = index;
-    this.setFunIndex(this.mCanvasUtils.resRank[index].funIndex.toString());
   }
 
   changeFitStatus() {
@@ -226,7 +226,7 @@ class Index extends Component {
       // this.state.fitStatus = fitStatus === 0 ? 1 : 0;
       // this.state.rankIndex = 0;
       // this.state.resRank = this.mCanvasUtils.resRank;
-      this.setState({ fitStatus: fitStatus === 0 ? 1 : 0, rankIndex: 0, resRank: this.mCanvasUtils.resRank },()=>{
+      this.setState({ fitStatus: fitStatus === 0 ? 1 : 0, rankIndex: 0, resRank: this.mCanvasUtils.resRank }, () => {
         this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
       });
     }
@@ -235,7 +235,7 @@ class Index extends Component {
         fitStatus: fitStatus === 0 ? 1 : 0,
         rankIndex: 0,
         resRank: []
-      },()=>{
+      }, () => {
         this.dorwLC();
       })
 
@@ -269,6 +269,7 @@ class Index extends Component {
     return (
 
       <View className='panel__content'>
+      <View className='component-margin-left component-margin-right'>
         {/* <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
         <Button onClick={this.incrementAsync}>Add Async</Button>
@@ -287,9 +288,11 @@ class Index extends Component {
             />
           </AtList>
         </Picker>
+        </View>
+
         <Canvas canvasId='fitCanvas' className='canvas' style='width: 100%; height:0;padding-bottom:100%;' />
 
-        <View className='example-item'>
+        <View className='example-item component-margin-left component-margin-right'>
           <View className='example-item' style={{ display: fitStatus === 1 ? 'none' : 'block' }}>
             <View className='example-item' style={{ display: fitType === 0 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
@@ -315,7 +318,7 @@ class Index extends Component {
                   />
                 </AtList>
               </Picker>
-              <View className='example-item__desc'>平均值:{dataAvg}</View>
+              <View className='example-item__desc component-margin-top'>平均值:{dataAvg}</View>
               <View className='example-item'>
                 <AtTextarea
                   count={false}
@@ -354,7 +357,9 @@ class Index extends Component {
               </View>
             </View>
           </View>
+          <View className='component-margin-top component-margin-bottom'>
           <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
+          </View>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
             <View className='example-item__desc__top'>基尼系数: {gini.toPrecision(10)}</View>
             <View className='component-list__item'>

@@ -130,4 +130,28 @@ export default class FunUtils {
         }
     }
 
+    //根据一分一排名算等分均值
+    public static getEqualMean(x: number[], y: number[], N: number) {
+        const equalMeanArr: number[] = [];
+        let temx = 0;
+        let temy = 0;
+        for (let i = 0; i < x.length; i++) {
+            if (temx + x[i] < 1 / N) {
+                temx += x[i];
+                temy += y[i] * x[i];
+            }
+            else {
+                const upx = 1 / N - temx;
+                temx += upx;
+                temy += y[i] * upx;
+                equalMeanArr.push(temy * N);
+
+                const downx = x[i] / N - upx;
+                temx = temy = 0;
+                temx += downx;
+                temy += y[i] * downx;
+            }
+        }
+        return equalMeanArr;
+    }
 }

@@ -5,6 +5,8 @@ import { AtSlider } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
+import FunLC from '../../utils/FunLC';
+
 
 type PageStateProps = {
   counterStore: {
@@ -49,7 +51,7 @@ class Index extends Component {
   }
 
   componentDidMount() {
-   
+
   }
 
   componentWillUnmount() { }
@@ -72,24 +74,35 @@ class Index extends Component {
     const { changeValueStore } = this.props
     changeValueStore.setGini(value)
   }
-
+  getFunName = (func: Function) => {
+    const macthArr = func.toString().match(/return.*;/);
+    if (macthArr && macthArr.length > 0) {
+      return macthArr[0].replace('return ', '').replace(';', '');
+    }
+    else {
+      return null;
+    }
+  }
   render() {
-    const { changeValueStore: { gini } } = this.props;
     return (
-      <View className='panel__content'>
-        <View className='example-item'>
-          <View className='example-item__desc'>圆心轨倾角</View>
-          <AtSlider value={50} step={1} max={90} min={0} showValue></AtSlider>
+      <View className='component-margin-left component-margin-right'>
+        <View className='component-list__item' >
+          <View className='example-item__desc'>函数名</View>
+          <View className='example-item__desc'>函数js表达式</View>
         </View>
-        <View className='example-item'>
-          <View className='example-item__desc'>圆最大半径比%</View>
-          <AtSlider value={50} step={1} max={100} min={0} showValue></AtSlider>
-        </View>
-        <View className='example-item'>
-          <View className='example-item__desc'>基尼系数%</View>
-          <AtSlider value={gini} step={1} max={100} min={0} onChanging={(value: number) => { this.setGini(value) }} ></AtSlider>
-        </View>
-      </View>
+        <View>
+          {
+            FunLC.map((item) => {
+              return (
+                <View className='component-list__item' key={item.name} >
+                  <View className='example-item__desc'>{item.name}</View>
+                  <View className='example-item__desc'>{this.getFunName(item.func)}</View>
+                </View>
+              )
+            })
+          }
+        </View >
+      </View >
     )
   }
 }

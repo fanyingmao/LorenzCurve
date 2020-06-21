@@ -126,7 +126,7 @@ view {
   &__item {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     height: 120px;
     @include hairline-bottom();
 
@@ -139,9 +139,22 @@ view {
       color: #CCC;
     }
   }
+}
+.component-margin {
+  margin: 24px 24px 24px;
+}
+.component-margin-left {
+  margin-left: 24px;
+}
 
-  .component-margin {
-    margin: 20px 60px 40px;
-  
-    }
+.component-margin-right {
+  margin-right: 24px;
+}
+
+.component-margin-top {
+  margin-top: 24px;
+}
+
+.component-margin-bottom {
+  margin-bottom: 24px;
 }
