@@ -36,7 +36,7 @@ const configList: ConfigItem[] = [
         from: '模型来自于知乎网友'
     },
     {
-        name: 'mf0',
+        name: 'm0',
         func: function (x: number, a: number) {
             return 1 - Math.log((1 - x) * (Math.exp(a) - 1) + 1) / a;
         },

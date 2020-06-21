@@ -185,7 +185,7 @@ class Index extends Component {
           />
           <View className='example-item'>
             <View className='example-item__desc component-margin-top'>基尼系数:{gini.toFixed(3)}</View>
-            <AtSlider value={gini * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax);this.dorwLC();}} ></AtSlider>
+            <AtSlider value={ Math.round(gini * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax);this.dorwLC();}} ></AtSlider>
 
             <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
             <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>

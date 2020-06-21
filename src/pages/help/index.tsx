@@ -96,7 +96,7 @@ class Index extends Component {
               <View className='example-item__desc'>二、数据集合，可以是随机取样也可以是像等分均值数据，例如五等分人均可支配收入可以用这种方式拟合，提供了部分数据可选，如高考数据。</View>
               <View className='example-item__desc'>三、斜率，使用于类似考试知道平均分班级总数，然后90分以上多少人，80分以上多少人，不及格多少人或者xx分排xx名这样的数据，然后得到对应百分比斜率再用这个方式拟合。</View>
             </View>
-            <View className='example-item__desc'>*在函数界面可以看到对应拟合函数的具体公式，为js代码的展示仅支持一个可变参数a的函数。m开头的函数是对应f的以y=-x+1的直线做的镜像函数，例如mf0是f0的镜像函数</View>
+            <View className='example-item__desc'>*在函数界面可以看到对应拟合函数的具体公式，为js代码的展示仅支持一个可变参数a的函数。m开头的函数是对应f的以y=-x+1的直线做的镜像函数，例如m0是f0的镜像函数</View>
             <View className='example-item__desc'>*在帮助界面即本页面。</View>
           </View>
           <View className='example-item__desc'>3、关于误差

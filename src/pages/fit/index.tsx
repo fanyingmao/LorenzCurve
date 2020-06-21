@@ -328,7 +328,7 @@ class Index extends Component {
                   />
                 </AtList>
               </Picker>
-              <View className='example-item__desc component-margin-top'>平均值:{avg}</View>
+              <View className='example-item__desc component-margin-top'>平均值:{avg.toFixed(3)}</View>
               <View className='example-item'>
                 <AtTextarea
                   count={false}
@@ -373,11 +373,11 @@ class Index extends Component {
             <AtButton type='primary' onClick={this.changeFitStatus.bind(this)}>{fitStatus === 0 ? '显示拟合结果' : '返回数据录入'}</AtButton>
           </View>
           <View className='example-item' style={{ display: fitStatus === 0 ? 'none' : 'block' }} >
-            <View className='example-item__desc__top'>基尼系数: {gini.toPrecision(10)}</View>
+            <View className='example-item__desc__top'>基尼系数: {gini.toPrecision(3)}</View>
             <View className='component-list__item'>
-              {/* <View style={{ visibility: 'hidden' }}>
+              <View style={{ visibility: 'hidden' }}>
                 <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
-              </View> */}
+              </View> 
               <View className='example-item__desc'>函数名</View>
               <View className='example-item__desc'>方差</View>
               <View className='example-item__desc'>a值</View>
@@ -390,8 +390,8 @@ class Index extends Component {
                       <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
                     </View>
                     <View className='example-item__desc'>{item.name}</View>
-                    <View className='example-item__desc'>{(item.variance * 10000).toPrecision(10)}</View>
-                    <View className='example-item__desc'>{item.resA.toPrecision(10)}</View>
+                    <View className='example-item__desc'>{(item.variance * 10000).toPrecision(5)}</View>
+                    <View className='example-item__desc'>{item.resA.toPrecision(5)}</View>
                   </View>
                 )
               })
