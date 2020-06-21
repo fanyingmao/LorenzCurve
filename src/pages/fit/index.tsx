@@ -82,7 +82,7 @@ class Index extends Component {
   }
 
   componentDidUpdate() {
-    this.dorwLC();
+   
   }
 
   componentWillUnmount() { }
@@ -121,7 +121,6 @@ class Index extends Component {
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
-
     if (fitStatus === 1) {
       this.mCanvasUtils.drawFunLineA(ctx, funIndex, resRank[rankIndex].resA);
       this.setGini(this.mCanvasUtils.gini);
@@ -165,10 +164,10 @@ class Index extends Component {
       case 2:
         this.mCanvasUtils.addFitPoint({ type: 1, x: fitX, y: fitY });
         this.setState({ fitX: 0, fitY: 0 });
-        this.mCanvasUtils.drawFitPoint2(ctx, (x: number) => x);
+        this.mCanvasUtils.drawFitPoint2(ctx);
         break;
     }
-
+    this.dorwLC();
     // ctx.draw();
   }
 
@@ -202,6 +201,7 @@ class Index extends Component {
   setFunIndex = (value: string) => {
     const { changeValueStore } = this.props
     changeValueStore.setFunIndex(parseInt(value))
+    this.dorwLC();
   }
 
   selectRankIndex = (index: number) => {
@@ -226,15 +226,19 @@ class Index extends Component {
       // this.state.fitStatus = fitStatus === 0 ? 1 : 0;
       // this.state.rankIndex = 0;
       // this.state.resRank = this.mCanvasUtils.resRank;
-      this.setState({ fitStatus: fitStatus === 0 ? 1 : 0, rankIndex: 0, resRank: this.mCanvasUtils.resRank });
-      this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
+      this.setState({ fitStatus: fitStatus === 0 ? 1 : 0, rankIndex: 0, resRank: this.mCanvasUtils.resRank },()=>{
+        this.setFunIndex(this.mCanvasUtils.resRank[0].funIndex.toString());
+      });
     }
     else {
       this.setState({
         fitStatus: fitStatus === 0 ? 1 : 0,
         rankIndex: 0,
         resRank: []
+      },()=>{
+        this.dorwLC();
       })
+
     }
   }
 
@@ -326,7 +330,7 @@ class Index extends Component {
             </View>
             <View className='example-item' style={{ display: fitType === 2 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
-              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
               <AtInput
                 name='value5'
                 title='斜率'

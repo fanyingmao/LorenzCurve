@@ -4,7 +4,7 @@ export default class FunUtils {
     public static readonly step = 0.001;//微积分的细化度
     public static readonly BinaryAccuracy = 0.0001;//二分查找精度
     public static readonly DerivativeAccuracy = 0.000001;//斜率计算精度
-    public static readonly SegmentNum = 64;//函数谷查找拟合分割数
+    public static readonly SegmentNum = 512;//函数谷查找拟合分割数
     //0到1的定积分，和点
     public static getIntegral01(func: Function, a: number) {
         let x = 0;

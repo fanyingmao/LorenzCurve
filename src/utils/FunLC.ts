@@ -13,7 +13,7 @@ const configList: ConfigItem[] = [
             return (Math.exp(a * x) - 1) / (Math.exp(a) - 1);
         },
         maxA: 100,
-        minA: 0.01,
+        minA: 0.001,
         from: '模型来自于国外一个教授论文'
     },
     // 论文 https://pdfs.semanticscholar.org/aef0/c2d36fb11588577f2982aee84e9610b33143.pdf
@@ -41,7 +41,7 @@ const configList: ConfigItem[] = [
             return 1 - Math.log((1-x) * (Math.exp(a) - 1) + 1)/a;
         },
         maxA: 100,
-        minA: 0.01,
+        minA: 0.001,
         from: 'f0的镜像'
     },
 ]
