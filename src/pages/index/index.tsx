@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Canvas, Picker } from '@tarojs/components'
-import { AtSlider, AtList, AtListItem, AtInput } from 'taro-ui'
+import { View, Canvas, Picker, Button } from '@tarojs/components'
+import { AtSlider, AtList, AtListItem, AtButton, AtInput, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
 import './index.scss'
@@ -30,7 +30,10 @@ type PageStateProps = {
 }
 type StateType = {
   k: number
+  isOpenedKavg: false
+  isOpenedAvg: false
 }
+
 interface Index {
   props: PageStateProps
   state: StateType
@@ -98,6 +101,20 @@ class Index extends Component {
     changeValueStore.setAvg(value)
   }
 
+  setKavg = (value: number) => {
+    const { changeValueStore: { avg } } = this.props;
+    const k = value / avg;
+    try {
+      const kx = this.indexCanvasGg.getDerivativeX(k);
+      // kx = Number.parseFloat(kx.toFixed(3));
+      this.setXShowValue(kx);
+      this.dorwX();
+    } catch (error) {
+      this.showToast(error.message);
+    }
+
+  }
+
   setFunIndex = (value: string) => {
     const { changeValueStore } = this.props
     changeValueStore.setFunIndex(parseInt(value))
@@ -145,8 +162,11 @@ class Index extends Component {
 
   render() {
     const { changeValueStore: { gini, xShowValue, funIndex, avg } } = this.props
-    const { k } = this.state;
+    const { k, isOpenedKavg, isOpenedAvg } = this.state;
+    const kavg = k * avg;
     const selector = FunLC.map(item => item.name);
+    let avgTem = avg;
+    let kavgTem = kavg;
     return (
       <View className='panel__content component-pain-bottom'>
         {/* <Button onClick={this.increment}>+</Button>
@@ -174,23 +194,86 @@ class Index extends Component {
           <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
         </View>
         <View className='component-margin-left component-margin-right'>
-          <View className='example-item__desc component-margin-top'>k乘平均值: {(k * avg).toFixed(3)}</View>
-          <AtInput
-            name='value4'
-            title='平均值'
-            type='digit'
-            placeholder='请输入平均值'
-            value={avg.toString()}
-            onChange={(value: string) => { this.setAvg(value ? Number.parseFloat(value) : 1); }}
-          />
+
+          <View className='btn-item component-margin-left component-margin-right'>
+            <View className='component-list__item'>
+              <View className='example-item__input  component-margin-top'>k*平均值： {kavg.toFixed(1)}</View>
+              <View className='subitem'>
+                <AtButton type='secondary' size='small' onClick={() => { avgTem = avg; this.setState({ isOpenedKavg: true }) }}>修改</AtButton>
+              </View>
+            </View>
+            <View className='component-list__item'>
+              <View className='example-item__input component-margin-top'>平 均 值 ： {avg.toString()}</View>
+              <View className='subitem'>
+                <AtButton type='secondary' size='small' onClick={() => { avgTem = avg; this.setState({ isOpenedAvg: true }) }}>修改</AtButton>
+              </View>
+            </View>
+          </View>
+
           <View className='example-item'>
             <View className='example-item__desc component-margin-top'>基尼系数:{gini.toFixed(3)}</View>
-            <AtSlider value={ Math.round(gini * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax);this.dorwLC();}} ></AtSlider>
+            <AtSlider value={Math.round(gini * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax); this.dorwLC(); }} ></AtSlider>
 
             <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-            <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
+            <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} showValue onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
           </View>
+
         </View>
+        {/* 基础模态框 */}
+        <AtModal
+          isOpened={isOpenedKavg}
+          onClose={() => {
+            this.setState({
+              isOpenedKavg: false
+            })
+          }}
+        >
+          <AtModalHeader>修改值</AtModalHeader>
+          <AtModalContent>
+            <View className='modal-content'>
+              <AtInput
+                name='value4'
+                title='k*平均值:'
+                type='digit'
+                placeholder='k*平均值'
+                value={kavgTem.toFixed(1)}
+                onChange={(value: string) => { kavgTem = value ? Number.parseFloat(value) : 1 }}
+              />
+            </View>
+          </AtModalContent>
+          <AtModalAction>
+            <Button onClick={() => { this.setState({ isOpenedKavg: false }) }}>取消</Button>
+            <Button onClick={() => { this.setKavg(kavgTem); this.setState({ isOpenedKavg: false }) }}>确定</Button>
+          </AtModalAction>
+        </AtModal>
+
+        {/* 基础模态框 */}
+        <AtModal
+          isOpened={isOpenedAvg}
+          onClose={() => {
+            this.setState({
+              isOpenedAvg: false
+            })
+          }}
+        >
+          <AtModalHeader>修改值</AtModalHeader>
+          <AtModalContent>
+            <View className='modal-content'>
+              <AtInput
+                name='value3'
+                title='平均值'
+                type='digit'
+                placeholder='请输入平均值'
+                value={avgTem.toString()}
+                onChange={(value: string) => { avgTem = value ? Number.parseFloat(value) : 1; }}
+              />
+            </View>
+          </AtModalContent>
+          <AtModalAction>
+            <Button onClick={() => { this.setState({ isOpenedAvg: false }) }}>取消</Button>
+            <Button onClick={() => { this.setState({ isOpenedAvg: false }, () => { this.setAvg(avgTem) }) }}>确定</Button>
+          </AtModalAction>
+        </AtModal>
       </View>
 
     )

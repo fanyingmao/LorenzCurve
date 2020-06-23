@@ -16,7 +16,6 @@ export default class CanvasUtils {
     private readonly widthRate = 8 / 10;
     private readonly offset = 10;
     private fitPointArr: Point[];
-    private yMax: number;//y轴最大值
     public resRank: { name: string, resA: number, variance: number, funIndex: number }[];
     constructor(width: number) {
         this.width = width;
@@ -257,5 +256,9 @@ export default class CanvasUtils {
         else {
             throw new Error(`最少需要两个数据点`);
         }
+    }
+
+    public getDerivativeX(k: number): number {
+        return FunUtils.getDerivativeXStart(FunLC[this.funLCIndex].func, this.resA, k);
     }
 }

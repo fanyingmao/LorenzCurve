@@ -2,7 +2,7 @@ import { Point } from "./IPoint";
 
 export default class FunUtils {
     public static readonly step = 0.001;//微积分的细化度
-    public static readonly BinaryAccuracy = 0.0001;//二分查找精度
+    public static readonly BinaryAccuracy = 0.000001;//二分查找精度
     public static readonly DerivativeAccuracy = 0.000001;//斜率计算精度
     public static readonly SegmentNum = 512;//函数谷查找拟合分割数
     //0到1的定积分，和点
@@ -32,6 +32,34 @@ export default class FunUtils {
         // else {
         //     return (func(x, a) - func(x - this.DerivativeAccuracy, a)) / this.DerivativeAccuracy;
         // }
+    }
+
+    //获得点的斜率
+    public static getDerivativeXStart(func: Function, a: number, k: number): number {
+        const minK = this.getDerivative(func, a, 0);
+        const maxK = this.getDerivative(func, a, 0.999);
+        console.log(`对于值超出可计算范围 k:${k} minK:${minK} maxK:${maxK}  `);
+        if (k < minK || k > maxK) {
+            throw new Error(`对于值超出可计算范围 k:${k} minK:${minK} maxK:${maxK} `);
+        }
+        return this.getDerivativeX(func, a, k, 0, minK, 0.999, maxK);
+    }
+
+    //获得点的斜率
+    public static getDerivativeX(func: Function, a: number, k: number, minX: number, minK: number, maxX: number, maxK: number): number {
+        const midX = (minX + maxX) / 2;
+        const midK = this.getDerivative(func, a, midX);
+        if (Math.abs(k - midK) < this.step / 1000) {
+            return midX;
+        }
+        else {
+            if (k > midK) {
+                return this.getDerivativeX(func, a, k, midX, midK, maxX, maxK);
+            }
+            else {
+                return this.getDerivativeX(func, a, k, minX, minK, midX, midK);
+            }
+        }
     }
 
     //获取基尼系数对应a值
@@ -76,6 +104,7 @@ export default class FunUtils {
             let temy = 0;
             if (item.type === 0) {
                 temy = Math.pow(func(item.x, a) - item.y, 2);
+                // temy = Math.pow(item.y / func(item.x, a) - 1, 2);
             }
             else {
                 temy = Math.pow(item.y / this.getDerivative(func, a, item.x) - 1, 2);

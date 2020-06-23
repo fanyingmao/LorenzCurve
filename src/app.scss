@@ -63,7 +63,11 @@ view {
       display: inline-block;
       margin-left: 24px;
     }
-
+    &__input {
+      margin-bottom: 24px;
+      color: #333;
+      font-size: 32px;
+    }
     &__desc {
       margin-bottom: 12px;
       color: #333;

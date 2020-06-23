@@ -111,6 +111,7 @@ class Index extends Component {
 
   setAvg = (value: number) => {
     const { changeValueStore } = this.props
+    value = Number.parseFloat(value.toFixed(3));
     changeValueStore.setAvg(value)
   }
 
@@ -127,16 +128,18 @@ class Index extends Component {
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
-    if (fitStatus === 1) {
-      this.mCanvasUtils.drawFunLineA(ctx, funIndex, resRank[rankIndex].resA);
-      this.setGini(this.mCanvasUtils.gini);
-    }
+    
     if (fitType === 2) {
       this.mCanvasUtils.drawFitPoint2(ctx);
     }
     else {
       this.mCanvasUtils.drawFitPoint(ctx);
     }
+    if (fitStatus === 1) {
+      this.mCanvasUtils.drawFunLineA(ctx, funIndex, resRank[rankIndex].resA);
+      this.setGini(this.mCanvasUtils.gini);
+    }
+
     // // 开始绘制
     ctx.draw();
   }
@@ -390,8 +393,8 @@ class Index extends Component {
                       <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
                     </View>
                     <View className='example-item__desc'>{item.name}</View>
-                    <View className='example-item__desc'>{(item.variance * 10000).toPrecision(5)}</View>
-                    <View className='example-item__desc'>{item.resA.toPrecision(5)}</View>
+                    <View className='example-item__desc'>{(item.variance * 10000).toPrecision(6)}</View>
+                    <View className='example-item__desc'>{item.resA.toPrecision(6)}</View>
                   </View>
                 )
               })
