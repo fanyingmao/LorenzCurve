@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Canvas, Picker, Button } from '@tarojs/components'
+import { View, Canvas, Picker, Button, CoverView } from '@tarojs/components'
 import { AtSlider, AtList, AtListItem, AtButton, AtInput, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
@@ -169,11 +169,7 @@ class Index extends Component {
     let kavgTem = kavg;
     return (
       <View className='panel__content component-pain-bottom'>
-        {/* <Button onClick={this.increment}>+</Button>
-        <Button onClick={this.decrement}>-</Button>
-        <Button onClick={this.incrementAsync}>Add Async</Button>
-        <Text>{counter}</Text> */}
-        {/* 表盘绘制 */}
+
         <View className='component-margin-left component-margin-right'>
           <Picker
             mode='selector'
@@ -189,10 +185,13 @@ class Index extends Component {
             </AtList>
           </Picker>
         </View>
-        <View className='example-item'>
-          <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
-          <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
+        <View style={{ display: isOpenedAvg || isOpenedKavg ? 'none' : 'block' }} >
+          <View className='example-item' >
+            <Canvas canvasId='indexCanvasGg' className='canvas_bg' style='width: 100%; height:0;padding-bottom:100%;' />
+            <Canvas canvasId='indexCanvasX' className='canvas_x' style='width: 100%; height:0;padding-bottom:100%;' />
+          </View>
         </View>
+
         <View className='component-margin-left component-margin-right'>
 
           <View className='btn-item component-margin-left component-margin-right'>
@@ -219,6 +218,7 @@ class Index extends Component {
           </View>
 
         </View>
+
         {/* 基础模态框 */}
         <AtModal
           isOpened={isOpenedKavg}
@@ -258,7 +258,7 @@ class Index extends Component {
         >
           <AtModalHeader>修改值</AtModalHeader>
           <AtModalContent>
-            <View className='modal-content'>
+            <CoverView className='modal-content'>
               <AtInput
                 name='value3'
                 title='平均值'
@@ -267,7 +267,7 @@ class Index extends Component {
                 value={avgTem.toString()}
                 onChange={(value: string) => { avgTem = value ? Number.parseFloat(value) : 1; }}
               />
-            </View>
+            </CoverView>
           </AtModalContent>
           <AtModalAction>
             <Button onClick={() => { this.setState({ isOpenedAvg: false }) }}>取消</Button>
