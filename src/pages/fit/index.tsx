@@ -65,7 +65,7 @@ class Index extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: ''};
+    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: '' };
   }
 
   componentWillMount() {
@@ -128,7 +128,7 @@ class Index extends Component {
     const ctx = Taro.createCanvasContext('fitCanvas', this.$scope);
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
-    
+
     if (fitType === 2) {
       this.mCanvasUtils.drawFitPoint2(ctx);
     }
@@ -309,10 +309,10 @@ class Index extends Component {
           <View className='example-item' style={{ display: fitStatus === 1 ? 'none' : 'block' }}>
             <View className='example-item' style={{ display: fitType === 0 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
-              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+              <AtSlider value={Math.round(fitX * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
 
               <View className='example-item__desc'>y值:{fitY.toFixed(3)}</View>
-              <AtSlider value={fitY * this.sliderMax} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
+              <AtSlider value={Math.round(fitY * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setState({ fitY: value / this.sliderMax }); }}></AtSlider>
 
             </View>
             <View className='example-item' style={{ display: fitType === 1 ? 'block' : 'none' }}>
@@ -348,7 +348,7 @@ class Index extends Component {
             </View>
             <View className='example-item' style={{ display: fitType === 2 ? 'block' : 'none' }}>
               <View className='example-item__desc'>x值:{fitX.toFixed(3)}</View>
-              <AtSlider value={fitX * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
+              <AtSlider value={Math.round(fitX * this.sliderMax)} step={1} max={this.sliderMax - 1} min={0} showValue onChange={(value: number) => { this.setState({ fitX: value / this.sliderMax }); }} ></AtSlider>
               <AtInput
                 name='value5'
                 title='斜率'
@@ -380,7 +380,7 @@ class Index extends Component {
             <View className='component-list__item'>
               <View style={{ visibility: 'hidden' }}>
                 <AtIcon value='check' size='20' color='#006ea6'></AtIcon>
-              </View> 
+              </View>
               <View className='example-item__desc'>函数名</View>
               <View className='example-item__desc'>方差</View>
               <View className='example-item__desc'>a值</View>

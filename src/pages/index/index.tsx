@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Canvas, Picker, Button, CoverView } from '@tarojs/components'
+import { View, Canvas, Picker, Button } from '@tarojs/components'
 import { AtSlider, AtList, AtListItem, AtButton, AtInput, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import { observer, inject } from '@tarojs/mobx'
 
@@ -30,8 +30,10 @@ type PageStateProps = {
 }
 type StateType = {
   k: number
-  isOpenedKavg: false
-  isOpenedAvg: false
+  isOpenedKavg: boolean
+  isOpenedAvg: boolean
+  avgTem: string
+  kavgTem: string
 }
 
 interface Index {
@@ -57,12 +59,39 @@ class Index extends Component {
   private readonly sliderMax = 1000;
   indexCanvasGg: CanvasUtils;
   indexCanvasX: CanvasUtils;
+
+  giniTem: number;
+  xTem: number;
+  temInterval: NodeJS.Timeout;
+
+  isChangeProcess: boolean;
+
+
+  constructor(props) {
+    super(props);
+    this.state = { isOpenedKavg: false, isOpenedAvg: false, k: 0, avgTem: '0', kavgTem: '0' };
+  }
+
   componentWillMount() {
     const res = Taro.getSystemInfoSync()
     const width = res.windowWidth;
     this.indexCanvasGg = new CanvasUtils(width);
     this.indexCanvasX = new CanvasUtils(width);
     this.dorwLC();
+    this.giniTem = 500;
+    this.xTem = 500;
+    this.isChangeProcess = false;
+    this.temInterval = setInterval(() => {
+      if (!this.isChangeProcess) {
+        const { changeValueStore: { xShowValue, gini } } = this.props
+        this.giniTem = Math.round(gini * this.sliderMax);
+        this.xTem = Math.round(xShowValue * this.sliderMax);
+        return;
+      }
+      this.setXshowValue(this.xTem);
+      this.setGiniValue(this.giniTem);
+    }, 1000);
+
   }
 
   componentWillReact() {
@@ -73,14 +102,15 @@ class Index extends Component {
 
   }
 
-  componentWillUnmount() { }
+  componentWillUnmount() {
+    clearInterval(this.temInterval);
+  }
 
   componentDidShow() {
     this.dorwLC();
   }
-
-  componentDidHide() { }
-
+  componentDidHide() {
+  }
   increment = () => {
     const { counterStore } = this.props
     counterStore.increment()
@@ -93,15 +123,22 @@ class Index extends Component {
 
   setGini = (value: number) => {
     const { changeValueStore } = this.props
+    console.log('setGini   ' + value);
     changeValueStore.setGini(value)
   }
 
   setAvg = (value: number) => {
+    if (!value) {
+      value = 1;
+    }
     const { changeValueStore } = this.props
     changeValueStore.setAvg(value)
   }
 
   setKavg = (value: number) => {
+    if (!value) {
+      value = 1;
+    }
     const { changeValueStore: { avg } } = this.props;
     const k = value / avg;
     try {
@@ -152,21 +189,39 @@ class Index extends Component {
   // 绘制X
   dorwX = () => {
     const { changeValueStore: { xShowValue } } = this.props
+    console.log('xShowValue   ' + xShowValue);
     const ctx = Taro.createCanvasContext('indexCanvasX', this.$scope);
     this.indexCanvasGg.initDraw(ctx);
     const k = this.indexCanvasGg.drapXShow(ctx, xShowValue);
-    this.setState({ k });
-    // 开始绘制
-    ctx.draw();
+    this.setState({ k }, () => {
+      // 开始绘制
+      ctx.draw();
+    });
   }
 
+  setXshowValue(value: number) {
+    const { changeValueStore: { xShowValue } } = this.props
+    if (Math.round(xShowValue * this.sliderMax) !== value) {
+      this.setXShowValue(value / this.sliderMax);
+      this.dorwX();
+      console.log('dorwX' + value + ' ' + xShowValue);
+    }
+  }
+
+  setGiniValue(value: number) {
+    const { changeValueStore: { gini } } = this.props
+    if (Math.round(gini * this.sliderMax) !== value) {
+      this.setGini(value / this.sliderMax);
+      this.dorwLC();
+      console.log('dorwLC' + value + ' ' + gini);
+    }
+  }
   render() {
     const { changeValueStore: { gini, xShowValue, funIndex, avg } } = this.props
-    const { k, isOpenedKavg, isOpenedAvg } = this.state;
+    const { k, isOpenedKavg, isOpenedAvg, kavgTem, avgTem } = this.state;
     const kavg = k * avg;
     const selector = FunLC.map(item => item.name);
-    let avgTem = avg;
-    let kavgTem = kavg;
+
     return (
       <View className='panel__content component-pain-bottom'>
 
@@ -196,25 +251,25 @@ class Index extends Component {
 
           <View className='btn-item component-margin-left component-margin-right'>
             <View className='component-list__item'>
-              <View className='example-item__input  component-margin-top'>k*平均值： {kavg.toFixed(1)}</View>
+              <View className='example-item__input  component-margin-top'>k*平均值： {kavg.toFixed(3)}</View>
               <View className='subitem'>
-                <AtButton type='secondary' size='small' onClick={() => { avgTem = avg; this.setState({ isOpenedKavg: true }) }}>修改</AtButton>
+                <AtButton type='secondary' size='small' onClick={() => { this.setState({ isOpenedKavg: true, kavgTem: Number.parseFloat(kavg.toFixed(3)) }) }}>修改</AtButton>
               </View>
             </View>
             <View className='component-list__item'>
               <View className='example-item__input component-margin-top'>平 均 值 ： {avg.toString()}</View>
               <View className='subitem'>
-                <AtButton type='secondary' size='small' onClick={() => { avgTem = avg; this.setState({ isOpenedAvg: true }) }}>修改</AtButton>
+                <AtButton type='secondary' size='small' onClick={() => { this.setState({ isOpenedAvg: true, avgTem: avg }) }}>修改</AtButton>
               </View>
             </View>
           </View>
 
           <View className='example-item'>
             <View className='example-item__desc component-margin-top'>基尼系数:{gini.toFixed(3)}</View>
-            <AtSlider value={Math.round(gini * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChange={(value: number) => { this.setGini(value / this.sliderMax); this.dorwLC(); }} ></AtSlider>
+            <AtSlider value={Math.round(gini * this.sliderMax)} step={1} max={this.sliderMax} min={0} showValue onChanging={(value: number) => { this.isChangeProcess = true; this.giniTem = value }} onChange={(value: number) => { this.isChangeProcess = false; this.setGiniValue(value) }} ></AtSlider>
 
             <View className='example-item__desc'>x轴数值:{xShowValue.toFixed(3)}</View>
-            <AtSlider value={xShowValue * this.sliderMax} step={1} max={this.sliderMax - 1} min={0} showValue onChanging={(value: number) => { this.setXShowValue(value / this.sliderMax); this.dorwX(); }} onChange={() => { this.dorwX(); }} ></AtSlider>
+            <AtSlider value={Math.round(xShowValue * this.sliderMax)} step={1} max={this.sliderMax - 1} min={0} showValue onChanging={(value: number) => { this.isChangeProcess = true; this.xTem = value }} onChange={(value: number) => { this.isChangeProcess = false; this.setXshowValue(value) }}></AtSlider>
           </View>
 
         </View>
@@ -223,9 +278,10 @@ class Index extends Component {
         <AtModal
           isOpened={isOpenedKavg}
           onClose={() => {
+
             this.setState({
               isOpenedKavg: false
-            })
+            }, () => { this.dorwLC(); })
           }}
         >
           <AtModalHeader>修改值</AtModalHeader>
@@ -236,14 +292,14 @@ class Index extends Component {
                 title='k*平均值:'
                 type='digit'
                 placeholder='k*平均值'
-                value={kavgTem.toFixed(1)}
-                onChange={(value: string) => { kavgTem = value ? Number.parseFloat(value) : 1 }}
+                value={kavgTem}
+                onChange={(value: string) => { this.setState({ kavgTem: value }) }}
               />
             </View>
           </AtModalContent>
           <AtModalAction>
-            <Button onClick={() => { this.setState({ isOpenedKavg: false }) }}>取消</Button>
-            <Button onClick={() => { this.setKavg(kavgTem); this.setState({ isOpenedKavg: false }) }}>确定</Button>
+            <Button onClick={() => { this.setState({ isOpenedKavg: false }, () => { this.dorwLC(); }) }}>取消</Button>
+            <Button onClick={() => { this.setState({ isOpenedKavg: false }, () => { this.setKavg(Number.parseFloat(kavgTem)); this.dorwLC(); }) }}>确定</Button>
           </AtModalAction>
         </AtModal>
 
@@ -253,25 +309,25 @@ class Index extends Component {
           onClose={() => {
             this.setState({
               isOpenedAvg: false
-            })
+            }, () => { this.dorwLC(); })
           }}
         >
           <AtModalHeader>修改值</AtModalHeader>
           <AtModalContent>
-            <CoverView className='modal-content'>
+            <View className='modal-content'>
               <AtInput
                 name='value3'
                 title='平均值'
                 type='digit'
                 placeholder='请输入平均值'
-                value={avgTem.toString()}
-                onChange={(value: string) => { avgTem = value ? Number.parseFloat(value) : 1; }}
+                value={avgTem}
+                onChange={(value: string) => { this.setState({ avgTem: value }) }}
               />
-            </CoverView>
+            </View>
           </AtModalContent>
           <AtModalAction>
-            <Button onClick={() => { this.setState({ isOpenedAvg: false }) }}>取消</Button>
-            <Button onClick={() => { this.setState({ isOpenedAvg: false }, () => { this.setAvg(avgTem) }) }}>确定</Button>
+            <Button onClick={() => { this.setState({ isOpenedAvg: false }, () => { this.dorwLC(); }) }}>取消</Button>
+            <Button onClick={() => { this.setState({ isOpenedAvg: false }, () => { this.setAvg(Number.parseFloat(avgTem)); this.dorwLC(); }) }}>确定</Button>
           </AtModalAction>
         </AtModal>
       </View>
