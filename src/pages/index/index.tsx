@@ -90,7 +90,7 @@ class Index extends Component {
       }
       this.setXshowValue(this.xTem);
       this.setGiniValue(this.giniTem);
-    }, 1000);
+    }, 200);
 
   }
 

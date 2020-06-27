@@ -1,14 +1,14 @@
 import { observable } from 'mobx'
 
 const changeValue = observable({
-  funIndex: 0,
+  funIndex: 1,
   xShowValue: 0.5,
   yShowValue: 0.5,
   kShowValue: 0.5,
   gini: 0.5,
   avg:1,
   changeValueStore() {
-    this.funIndex = 0;
+    this.funIndex = 1;
     this.xShowValue = 0;
     this.gini = 0;
     this.avg = 1;

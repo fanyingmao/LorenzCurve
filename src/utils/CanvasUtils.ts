@@ -158,7 +158,7 @@ export default class CanvasUtils {
     //画点
     public drawFitPoint(ctx: CanvasContext) {
         const length = this.length;
-        ctx.fillStyle = '#893f95';
+        ctx.fillStyle = '#00FF00';
         console.log('======drawFitPoint');
         for (let i = 0; i < this.fitPointArr.length; i++) {
             ctx.beginPath();
@@ -175,7 +175,7 @@ export default class CanvasUtils {
         const fun: Function = this.gini === 0 ? (x: number) => x : (x: number) => FunLC[this.funLCIndex].func(x, this.resA);
         const xtem = 0.01;
         ctx.beginPath();
-        ctx.strokeStyle = '#893f95';
+        ctx.strokeStyle = '#00FF00';
         ctx.setLineWidth(1);
         for (let i = 0; i < this.fitPointArr.length; i++) {
             const x = this.fitPointArr[i].x;

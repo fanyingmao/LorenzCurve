@@ -65,7 +65,7 @@ class Index extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { fitX: 0, fitY: 0, fitType: 0, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: '' };
+    this.state = { fitX: 0, fitY: 0, fitType: 1, fitStatus: 0, rankIndex: 0, resRank: [], sampleIndex: 0, dataStr: '' };
   }
 
   componentWillMount() {
@@ -129,15 +129,17 @@ class Index extends Component {
     this.mCanvasUtils.initDraw(ctx);
     this.mCanvasUtils.drawCoordinate(ctx);
 
-    if (fitType === 2) {
-      this.mCanvasUtils.drawFitPoint2(ctx);
-    }
-    else {
+    if (fitType !== 2) {
       this.mCanvasUtils.drawFitPoint(ctx);
     }
+
     if (fitStatus === 1) {
       this.mCanvasUtils.drawFunLineA(ctx, funIndex, resRank[rankIndex].resA);
       this.setGini(this.mCanvasUtils.gini);
+    }
+
+    if (fitType === 2) {
+      this.mCanvasUtils.drawFitPoint2(ctx);
     }
 
     // // 开始绘制
@@ -341,7 +343,7 @@ class Index extends Component {
                       this.setAvg(1);
                     });
                   }}
-                  maxLength={400}
+                  maxLength={4000}
                   placeholder='输入数据以逗号分割'
                 />
               </View>
