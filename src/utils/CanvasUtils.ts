@@ -200,32 +200,49 @@ export default class CanvasUtils {
     public addDataStr(dataStr: string) {
         this.clearFitPoint();
         let dataArr = dataStr.split(',').map(item => Number.parseInt(item));
-        let sum = 0;
+        let sum = 0, sumUp = 0,avg = 0;
         dataArr = dataArr.sort((a, b) => {
             return a > b ? 1 : -1;
         });
-        const stepRate = 1 / (2 * dataArr.length);
-        dataArr.forEach(item => {
-            sum += 2 * item;
-        })
-        let sumUp = 0;
-        let currentRate = 0;
-        for (let i = 0; i < dataArr.length; i++) {
 
-            if (i !== 0) {
-                const item = dataArr[i - 1];
-                sumUp += 2 * item;
-                currentRate += 2 * stepRate;
-            }
-            let x = currentRate + stepRate;
-            let y = (sumUp + dataArr[i] / 2) / sum;
-            console.log(JSON.stringify({ sumUp, sum, dataArr }));
-            console.log(JSON.stringify({ x, y }));
+        // const stepRate = 1 / (2 * dataArr.length);
+        // dataArr.forEach(item => {
+        //     sum += 2 * item;
+        // })
+        // sumUp = 0;
+        // let currentRate = 0;
+        // for (let i = 0; i < dataArr.length; i++) {
+
+        //     if (i !== 0) {
+        //         const item = dataArr[i - 1];
+        //         sumUp += 2 * item;
+        //         currentRate += 2 * stepRate;
+        //     }
+        //     let x = currentRate + stepRate;
+        //     let y = (sumUp + dataArr[i] / 2) / sum;
+        //     console.log(JSON.stringify({ sumUp, sum, dataArr }));
+        //     console.log(JSON.stringify({ x, y }));
+        //     x = Math.floor(x * 10000) / 10000;
+        //     y = Math.floor(y * 10000) / 10000;
+        //     this.addFitPoint({ type: 0, x, y });
+        // }
+        // avg = sum / (2 * dataArr.length)
+
+
+        dataArr.forEach(item => {
+            sum += item;
+        })
+        for (let i = 0; i < dataArr.length - 1; i++) {
+            let x = (i + 1) / dataArr.length;
+            sumUp += dataArr[i];
+            let y = sumUp / sum;
             x = Math.floor(x * 10000) / 10000;
             y = Math.floor(y * 10000) / 10000;
             this.addFitPoint({ type: 0, x, y });
         }
-        return sum / (2 * dataArr.length);
+        avg = sum / dataArr.length;
+
+        return avg;
     }
     public clearFitPoint() {
         this.fitPointArr = [];
