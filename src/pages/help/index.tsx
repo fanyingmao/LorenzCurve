@@ -101,7 +101,7 @@ class Index extends Component {
             <View className='example-item__desc'>1 、到拟合界面选用数据集合拟合。</View>
             <View className='example-item__desc'>2 、样例数据选 18 年美国收入数据，再点添加，这里可以看到数据的的散点分布。</View>
             <View className='example-item__desc'>3 、然后点显示拟合结果，这里可以看到洛伦兹曲线，并得到基尼系数。</View>
-            <View className='example-item__desc'>4 、再到系数页面把 k*平均值改成 10w，这时看到到 x 轴数值就是排在的百分比了。</View>
+            <View className='example-item__desc'>4 、再到系数页面把 k*平均值改成 10w，这时看到到 x 轴数值就是排在的百分比了,同时这个拟合结果的平均误差为0.0175。</View>
           </View>
           <View className='example-item__desc'>2、程序用途
         <View className='example-item__desc'>一、通过获得的少量数据来拟合出洛伦兹曲线获得基尼系数。</View>

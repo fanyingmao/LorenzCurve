@@ -254,7 +254,7 @@ export default class CanvasUtils {
         this.resRank = [];
         if (pointArr.length >= 2) {
             this.resRank = FunLC.map((item, index) => {
-                let res = FunUtils.searchPointFitStart(item.func, pointArr, item.minA, item.maxA);
+                const res = FunUtils.searchPointFitStart(item.func, pointArr, item.minA, item.maxA);
                 return { name: item.name, resA: res.resA, variance: res.variance, funIndex: index }
             });
             this.resRank.sort((a, b) => {
